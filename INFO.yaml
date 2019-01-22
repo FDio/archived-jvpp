@@ -1,0 +1,66 @@
+---
+project: 'jvpp'
+project_creation_date: '2019-01-22'
+project_category: ''
+lifecycle_state: 'Incubation'
+project_lead: &jvpp_ptl
+    name: 'Michal Cmarada'
+    email: 'mcmarada@cisco.com'
+    id: 'mcmarada'
+    company: 'Cisco'
+    timezone: ''
+primary_contact: *jvpp_ptl
+issue_tracking:
+    type: 'jira'
+    url: 'https://jira.fd.io/projects/JVPP'
+    key: 'JVPP'
+mailing_list:
+    type: 'groups.io'
+    url: 'https://lists.fd.io/g/jvpp-dev'
+    tag: '<[sub-project_name]>'
+realtime_discussion:
+    type: ''
+    server: ''
+    channel: ''
+meetings:
+    - type: ''
+      agenda: ''
+      url: ''
+      server: ''
+      channel: ''
+      repeats: ''
+      time: ''
+repositories:
+    - 'jvpp'
+committers:
+    - <<: *jvpp_ptl
+    - name: 'Marek Gradzki'
+      company: 'Cisco'
+      email: 'margradz@gmail.com'
+      id: 'mgradzki'
+      timezone: ''
+    - name: 'Tibor Kral'
+      company: 'Pantheon Tech'
+      email: 'Tibor.Kral@pantheon.tech'
+      id: 'tibor.kral'
+      timezone: ''
+    - name: 'Rastislav Szabo'
+      company: 'Cisco'
+      email: 'raszabo@cisco.com'
+      id: 'raszabo'
+      timezone: ''
+    - name: 'Jerome Tollet'
+      company: 'Cisco'
+      email: 'jtollet@cisco.com'
+      id: 'jtollet'
+      timezone: ''
+tsc:
+    # yamllint disable rule:line-length
+    approval: ''
+    changes:
+        - type: 'removal'
+          name: ''
+          link: ''
+        - type: 'promotion'
+          name: ''
+          link: ''
