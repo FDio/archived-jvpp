@@ -1,0 +1,16 @@
+.idea
+/build-root/lib
+/build-root/packages
+/build-root/.deps.ok
+/target
+**/core
+/Makefile
+
+cmake-build*/
+_CPack_Packages/
+CMakeFiles/
+CMakeCache.txt
+install_manifest.txt
+*.cmake
+*.cbp
+*.pyc

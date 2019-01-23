@@ -1,0 +1,6 @@
+# Negate "No core files" pattern from the toplevel .gitignore
+!**/core
+/CMakeFiles
+Makefile
+cmake_install.cmake
+*.jar
