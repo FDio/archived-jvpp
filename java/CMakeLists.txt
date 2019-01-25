@@ -136,7 +136,7 @@ if(${RELEASE_ID} MATCHES Ubuntu)
           COMMAND grep api.json OUTPUT_VARIABLE corefiles)
   STRING(REGEX REPLACE "\n" ";" corefiles "${corefiles}")
 elseif(${RELEASE_ID} MATCHES CentOS)
-  # Exclude vpp plugin api files. VPP package should not contain VPP-plugins api files and vice-versa. Temporary fixing
+  # Exclude vpp plugin api files. VPP package should not contain vpp-plugins api files and vice-versa. Temporary fixing
   # by excluding them manually.
   execute_process(COMMAND rpm -ql vpp
           COMMAND grep -v memclnt
@@ -193,11 +193,8 @@ unset (IOAM_TRACE_JSON_FILE)
 unset (IOAM_POT_JSON_FILE)
 unset (IOAM_EXPORT_JSON_FILE)
 
-execute_process(COMMAND dpkg-query -L vpp-plugins
-        COMMAND grep api.json OUTPUT_VARIABLE pluginfiles)
-STRING(REGEX REPLACE "\n" ";" pluginfiles "${pluginfiles}")
 if(${RELEASE_ID} MATCHES Ubuntu)
-  execute_process(COMMAND dpkg-query -L vpp-plugins
+  execute_process(COMMAND dpkg-query -L vpp-plugin-core
           COMMAND grep api.json OUTPUT_VARIABLE pluginfiles)
   STRING(REGEX REPLACE "\n" ";" pluginfiles "${pluginfiles}")
 elseif(${RELEASE_ID} MATCHES CentOS)
@@ -297,7 +294,7 @@ if (${RELEASE_ID} MATCHES "Ubuntu")
   set(CPACK_DEBIAN_PACKAGE_SECTION "${CPACK_PACKAGE_SECTION}")
   set(CPACK_DEBIAN_PACKAGE_FILE_NAME ${CPACK_PACKAGE_FILE_NAME})
   set(CPACK_DEBIAN_PACKAGE_PRIORITY extra)
-  set(CPACK_DEBIAN_PACKAGE_DEPENDS "vpp (>= ${vpp_version}), vpp-plugins (>= ${vpp_version})")
+  set(CPACK_DEBIAN_PACKAGE_DEPENDS "vpp (>= ${vpp_version}), vpp-plugin-core (>= ${vpp_version})")
 
   # Print Debian package summary
   message("\nDebian package:")
