@@ -20,16 +20,16 @@ project(jvpp)
 
 include(CheckCCompilerFlag)
 
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "amd64.*|x86_64.*|AMD64.*")
-  set(CMAKE_C_FLAGS "-march=corei7 -mtune=corei7-avx ${CMAKE_C_FLAGS}")
-elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64.*|AARCH64.*)")
-  set(CMAKE_C_FLAGS "-march=armv8-a+crc ${CMAKE_C_FLAGS}")
-endif()
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "amd64.*|x86_64.*|AMD64.*")
+    set(CMAKE_C_FLAGS "-march=corei7 -mtune=corei7-avx ${CMAKE_C_FLAGS}")
+elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64.*|AARCH64.*)")
+    set(CMAKE_C_FLAGS "-march=armv8-a+crc ${CMAKE_C_FLAGS}")
+endif ()
 
 check_c_compiler_flag("-Wno-address-of-packed-member" compiler_flag_no_address_of_packed_member)
 if (compiler_flag_no_address_of_packed_member)
-  add_definitions(-Wno-address-of-packed-member)
-endif()
+    add_definitions(-Wno-address-of-packed-member)
+endif ()
 
 find_package(Threads REQUIRED)
 
@@ -47,10 +47,10 @@ message("\nEnvironment Variables:")
 unset(JVPP_VERSION)
 unset(JAPI_LIB_VERSION)
 execute_process(
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
-  COMMAND ./version
-  OUTPUT_VARIABLE JVPP_VERSION
-  OUTPUT_STRIP_TRAILING_WHITESPACE
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
+        COMMAND ./version
+        OUTPUT_VARIABLE JVPP_VERSION
+        OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 string(REPLACE "-" ";" JAPI_LIB_VERSION ${JVPP_VERSION})
 list(GET JAPI_LIB_VERSION 0 JAPI_LIB_VERSION)
@@ -85,12 +85,12 @@ set(CMAKE_INSTALL_MESSAGE NEVER)
 unset(dirlist)
 
 macro(subdirlist dirlist dirpath)
-  file(GLOB dirs RELATIVE ${dirpath} ${dirpath}/*)
-  foreach(dir ${dirs})
-    if(IS_DIRECTORY ${dirpath}/${dir})
-      list(APPEND dirlist ${dirpath}/${dir})
-    endif()
-  endforeach()
+    file(GLOB dirs RELATIVE ${dirpath} ${dirpath}/*)
+    foreach (dir ${dirs})
+        if (IS_DIRECTORY ${dirpath}/${dir})
+            list(APPEND dirlist ${dirpath}/${dir})
+        endif ()
+    endforeach ()
 endmacro()
 
 #list(APPEND dirlist $ENV{JAVA_HOME})
@@ -112,7 +112,7 @@ message("    JAVA_HOME: $ENV{JAVA_HOME}")
 find_package(Java 1.8 REQUIRED COMPONENTS Development)
 message("JAVA: ${Java}")
 get_filename_component(jvm_path ${Java_JAVAC_EXECUTABLE} DIRECTORY)
-set (Java_INCLUDE_DIRS ${jvm_path}/../include ${jvm_path}/../include/linux)
+set(Java_INCLUDE_DIRS ${jvm_path}/../include ${jvm_path}/../include/linux)
 
 message("    Java headers: ${Java_INCLUDE_DIRS}")
 message("    Java compiler: ${Java_JAVAC_EXECUTABLE}")
