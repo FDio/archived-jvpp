@@ -52,6 +52,23 @@ from JVPP's root directory:
   cmake .
 
 This will configure all variables and setup the build.
+If needed there are several optional parameters that can be set. You can list all configuration parameters using:
+
+.. code-block:: console
+
+  cmake -LH
+
+as an example you can enable packaging using ZIP or TGZ. DEB or RPM packages are automatically configured based on OS.
+To enable packaging using ZIP or TGZ (or both) add optional parameter to cmake like this:
+
+.. code-block:: console
+
+  cmake -DPackZip=ON -DPackTgz=ON .
+
+.. note::
+
+  PackZip, PackTgz are boolean variables. You can use "1, ON, YES, TRUE, Y, or a non-zero number" to enable
+  or "0, OFF, NO, FALSE, N, IGNORE, NOTFOUND" to disable these options.
 
 Building the source
 -------------------
@@ -62,7 +79,7 @@ To build the source use make command:
 
   make
 
-You can also install the library using (you need to use sudo or have root privileges to install libraries):
+You can also install the library (Optional) using (you need to use sudo or have root privileges to install libraries):
 
 .. code-block:: console
 

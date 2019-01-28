@@ -31,6 +31,16 @@ if (compiler_flag_no_address_of_packed_member)
   add_definitions(-Wno-address-of-packed-member)
 endif()
 
+find_package(Threads REQUIRED)
+
+# OPTIONS
+option(PackZip "Create ZIP package (default: fasle)" false)
+option(PackTgz "Create Tgz package (default: fasle)" false)
+
+message("\nOptions:")
+message("    PackZip: ${PackZip}")
+message("    PackTgz: ${PackTgz}")
+
 message("\nEnvironment Variables:")
 
 # JVPP RELATED VARIABLES
@@ -49,6 +59,8 @@ message("    JVPP Main Version: ${JVPP_VERSION}")
 message("    JVPP Version: ${JAPI_LIB_VERSION}")
 
 # OS RELATED VARIABLES
+list(APPEND DebianBasedOS "Ubuntu" "LinuxMint")
+list(APPEND RHBasedOS "CentOS")
 unset(RELEASE_ID)
 unset(RELEASE_CODENAME)
 find_program(LSB_RELEASE_EXEC lsb_release)
@@ -69,8 +81,6 @@ message("    OS Release Codename: ${RELEASE_CODENAME} ")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build-root/lib)
 set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib)
 set(CMAKE_INSTALL_MESSAGE NEVER)
-
-find_package(Threads REQUIRED)
 
 unset(dirlist)
 
