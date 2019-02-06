@@ -49,7 +49,7 @@ add_custom_command(TARGET jvpp-registry-classes
         COMMAND mkdir -p jvpp-registry/target
         COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/jvpp-registry
         COMMAND ${Java_JAVAC_EXECUTABLE}
-        ARGS -d ${CMAKE_CURRENT_SOURCE_DIR}/jvpp-registry/target -h jvpp-registry ${files}
+        ARGS -source 1.8 -target 1.8 -d ${CMAKE_CURRENT_SOURCE_DIR}/jvpp-registry/target -h jvpp-registry ${files}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         )
 
@@ -90,7 +90,7 @@ function(japigen name)
             ARGS --plugin_name ${name} --root_dir jvpp-${name} -i ${ARGN}
             COMMAND find jvpp-${name} -name \*.java > jvpp-${name}/jvpp-${name}.files
     COMMAND ${Java_JAVAC_EXECUTABLE}
-    ARGS -cp ${CMAKE_CURRENT_BINARY_DIR}/jvpp-registry-${JAPI_LIB_VERSION}.jar -d
+    ARGS -source 1.8 -target 1.8 -cp ${CMAKE_CURRENT_BINARY_DIR}/jvpp-registry-${JAPI_LIB_VERSION}.jar -d
     ${CMAKE_CURRENT_SOURCE_DIR}/jvpp-${name}/target -h jvpp-${name}
     @jvpp-${name}/jvpp-${name}.files
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
@@ -282,7 +282,7 @@ set(CPACK_PACKAGE_NAME "vpp-api-java")
 set(CPACK_PACKAGE_VERSION "${JVPP_VERSION}")
 set(CPACK_PACKAGE_SECTION net)
 set(CPACK_PACKAGE_VENDOR "Cisco")
-set(CPACK_PACKAGE_CONTACT "hc2vpp@lists.fd.io")
+set(CPACK_PACKAGE_CONTACT "jvpp-dev@lists.fd.io")
 set(CPACK_OUTPUT_FILE_PREFIX build-root/packages)
 set(CPACK_PACKAGE_FILE_NAME "vpp-api-java_${JVPP_VERSION}")
 if (${RELEASE_ID} IN_LIST DebianBasedOS)

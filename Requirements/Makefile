@@ -28,6 +28,8 @@ SUDO?=sudo
 ifneq ($(shell uname),Darwin)
 OS_ID        = $(shell grep '^ID=' /etc/os-release | cut -f2- -d= | sed -e 's/\"//g')
 OS_VERSION_ID= $(shell grep '^VERSION_ID=' /etc/os-release | cut -f2- -d= | sed -e 's/\"//g')
+$(info Operating system: $(OS_ID))
+$(info Operating system version: $(OS_VERSION_ID))
 endif
 
 ifeq ($(filter ubuntu debian,$(OS_ID)),$(OS_ID))
@@ -47,10 +49,7 @@ DEB_DEPENDS += libboost-all-dev libffi-dev python-ply libmbedtls-dev
 DEB_DEPENDS += cmake ninja-build
 
 # ADD JDK for JVPP
-ifeq ($(OS_VERSION_ID),14.04)
-	DEB_DEPENDS += openjdk-8-jdk-headless
-	DEB_DEPENDS += libssl-dev
-else ifeq ($(OS_ID)-$(OS_VERSION_ID),debian-8)
+ifeq ($(OS_ID)-$(OS_VERSION_ID),debian-8)
 	DEB_DEPENDS += openjdk-8-jdk-headless
 	DEB_DEPENDS += libssl-dev
 	APT_ARGS = -t jessie-backports
@@ -151,18 +150,13 @@ TARGETS = jvpp
 .PHONY: help
 .PHONY: install-dep
 
-
 help:
 	@echo "Make Targets:"
 	@echo " install-dep         - install software dependencies"
 	@echo ""
 
 install-dep:
-ifeq ($(filter ubuntu debian,$(OS_ID)),$(OS_ID))
-ifeq ($(OS_VERSION_ID),14.04)
-	@sudo -E apt-get $(CONFIRM) $(FORCE) install software-properties-common
-	@sudo -E add-apt-repository ppa:openjdk-r/ppa $(CONFIRM)
-endif
+ifeq ($(filter ubuntu debian linuxmint,$(OS_ID)),$(OS_ID))
 ifeq ($(OS_ID)-$(OS_VERSION_ID),debian-8)
 	@grep -q jessie-backports /etc/apt/sources.list /etc/apt/sources.list.d/* 2> /dev/null \
            || ( echo "Please install jessie-backports" ; exit 1 )

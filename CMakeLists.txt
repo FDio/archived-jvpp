@@ -12,9 +12,6 @@
 # limitations under the License.
 
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
-add_custom_target(install-dep COMMAND make install-dep
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Requirements
-        )
 
 project(jvpp)
 
@@ -110,9 +107,10 @@ message("    Java home: $ENV{JAVA_HOME}")
 find_package(Java 1.8 REQUIRED COMPONENTS Development)
 get_filename_component(jvm_path ${Java_JAVAC_EXECUTABLE} DIRECTORY)
 set(Java_INCLUDE_DIRS ${jvm_path}/../include ${jvm_path}/../include/linux)
-
+message("    Java: ${Java_JAVA_EXECUTABLE}")
+message("    Java version: ${Java_VERSION_STRING}")
 message("    Java headers: ${Java_INCLUDE_DIRS}")
-message("    Java compiler: ${Java_JAVAC_EXECUTABLE}")
+message("    Javac: ${Java_JAVAC_EXECUTABLE}")
 
 execute_process(COMMAND ./scripts/verify-installed vpp* OUTPUT_VARIABLE VPP_INSTALLED)
 string(STRIP "${VPP_INSTALLED}" VPP_INSTALLED)

@@ -33,6 +33,7 @@ You can install all dependencies using provided install-dep target:
 
 .. code-block:: console
 
+  cd Requirements
   make install-dep
 
 Cleanup (Optional)
