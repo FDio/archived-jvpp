@@ -17,6 +17,25 @@ project(jvpp)
 
 include(CheckCCompilerFlag)
 
+#
+# Convert to camel case string from lower case underscored string.
+#
+# :param input: the input lowercase underscored string
+# :type input: string
+# :param output: the output camelcase string
+# :type output: string
+#
+function(camel_case_string input output)
+    string(REPLACE "_" ";" list ${input})
+    foreach(SUBSTR ${list})
+        string(SUBSTRING ${SUBSTR} 0 1 FIRST_LETTER)
+        string(TOUPPER ${FIRST_LETTER} FIRST_LETTER)
+        string(REGEX REPLACE "^.(.*)" "${FIRST_LETTER}\\1" SUBSTR "${SUBSTR}")
+        string(APPEND result ${SUBSTR})
+    endforeach(SUBSTR)
+    set(${output} "${result}" PARENT_SCOPE)
+endfunction()
+
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "amd64.*|x86_64.*|AMD64.*")
     set(CMAKE_C_FLAGS "-march=corei7 -mtune=corei7-avx ${CMAKE_C_FLAGS}")
 elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64.*|AARCH64.*)")
@@ -129,3 +148,30 @@ endif()
 
 add_subdirectory(java)
 
+# enable Tests
+include(FindPythonInterp)
+if(PYTHONINTERP_FOUND)
+    enable_testing()
+
+    execute_process(COMMAND ${PYTHON_EXECUTABLE} list_tests.py OUTPUT_VARIABLE STR_TESTS
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_STRIP_TRAILING_WHITESPACE)
+
+    separate_arguments(TEST_LIST UNIX_COMMAND ${STR_TESTS})
+
+    message(\nJVPP tests:)
+    foreach(JVPPTEST ${TEST_LIST})
+        string(REPLACE "test_jvpp.TestJVpp." "" JVPPTESTNAME ${JVPPTEST})
+        camel_case_string(${JVPPTESTNAME} JVPPTESTNAME)
+        message("    ${JVPPTESTNAME}")
+        set(CTEST_OUTPUT_ON_FAILURE=1)
+        set(ENV{V} "2")
+        add_test(NAME ${JVPPTESTNAME}
+                COMMAND ${PYTHON_EXECUTABLE} "-m" "unittest" "-v" ${JVPPTEST}
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/)
+    endforeach(JVPPTEST)
+else()
+    message(WARNING "Python interpreter not found. Tests are disabled.")
+endif()
+message(\nConfiguration results:)

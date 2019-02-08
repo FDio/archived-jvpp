@@ -5,6 +5,7 @@
 /target
 **/core
 /Makefile
+/Testing
 
 cmake-build*/
 _CPack_Packages/

@@ -80,11 +80,37 @@ To build the source use make command:
 
   make
 
+or for verbose output
+
+.. code-block:: console
+
+  export V=2; make
+
 You can also install the library (Optional) using (you need to use sudo or have root privileges to install libraries):
 
 .. code-block:: console
 
   sudo make install
+
+Running the unittests
+---------------------
+
+You can run unit tests to ensure that JVPP is working correctly. VPP instance needs to be running before the tests are
+executed.
+
+.. code-block:: console
+
+  make test
+
+or for verbose output
+
+.. code-block:: console
+
+  export V=2; make test ARGS="-V"
+
+.. note::
+
+  The results of tests are stored in temporary log file in ./Testing/Temporary/LastTest.log
 
 Building the packages
 ---------------------
@@ -100,6 +126,30 @@ To build the package you need to call:
   make package
 
 You can find the packages in build-root/packages folder.
+
+Using Checkstyle
+----------------
+
+If you are doing changes to source code you can validate checkstyle before pushing the code to mainstream.
+To do that you have several options.
+
+Running checkstyle for last commit (default)
+
+.. code-block:: console
+
+  ./scripts/checkstyle.sh
+
+Running checkstyle for all source files
+
+.. code-block:: console
+
+  ./scripts/checkstyle.sh --full
+
+Running checkstyle to fix issues automatically
+
+.. code-block:: console
+
+  ./scripts/checkstyle.sh --fix
 
 Getting JVPP jar
 ================
