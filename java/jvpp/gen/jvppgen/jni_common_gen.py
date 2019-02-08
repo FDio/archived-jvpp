@@ -15,7 +15,7 @@
 #
 from string import Template
 
-from jvpp_model import is_array, is_retval, Class, Enum, Union
+from jvpp_model import is_array, is_retval, Class, Enum, EnumSet, Union
 
 
 def generate_j2c_identifiers(element, class_ref_name, object_ref_name):
@@ -432,7 +432,10 @@ def _generate_c2j_primitive_type_swap(msg_java_name, field, object_ref_name, str
         if field_type.name == "string":
             template = _C2J_STRING_TYPE_SWAP_TEMPLATE
         else:
-            template = _C2J_PRIMITIVE_TYPE_SWAP_TEMPLATE
+            if isinstance(field_type, EnumSet):
+                template = _C2J_ENUMSET_TYPE_SWAP_TEMPLATE
+            else:
+                template = _C2J_PRIMITIVE_TYPE_SWAP_TEMPLATE
     else:
         template = _C2J_ALIAS_PRIMITIVE_TYPE_SWAP_TEMPLATE
     return template.substitute(
@@ -461,6 +464,11 @@ _C2J_STRING_TYPE_SWAP_TEMPLATE = Template("""
 _C2J_ALIAS_PRIMITIVE_TYPE_SWAP_TEMPLATE = Template("""
     jfieldID ${java_name}FieldId = (*env)->GetFieldID(env, ${class_ref_name}Class, "${java_name}", "${jni_signature}");
     (*env)->Set${jni_accessor}Field(env, ${object_ref_name}, ${java_name}FieldId, ${net_to_host_function}(*${struct_ref_name}));
+""")
+
+_C2J_ENUMSET_TYPE_SWAP_TEMPLATE = Template("""
+    jfieldID ${java_name}FieldId = (*env)->GetFieldID(env, ${class_ref_name}Class, "${java_name}", "${jni_signature}");
+    (*env)->Set${jni_accessor}Field(env, ${object_ref_name}, ${java_name}FieldId, ${net_to_host_function}(env, ${struct_ref_name}->${c_name}));
 """)
 
 

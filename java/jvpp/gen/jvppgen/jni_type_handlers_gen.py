@@ -16,7 +16,7 @@
 from string import Template
 
 from jni_common_gen import generate_j2c_swap, generate_j2c_field_swap, generate_j2c_identifiers, generate_c2j_swap
-from jvpp_model import Class, Enum, Union
+from jvpp_model import Class, Enum, EnumSet, Union
 
 
 def generate_type_handlers(model, logger):
@@ -32,6 +32,8 @@ def generate_type_handlers(model, logger):
             _generate_class(model, t, type_handlers)
         elif isinstance(t, Enum):
             _generate_enum(model, t, type_handlers)
+        elif isinstance(t, EnumSet):
+            _generate_enumset(model, t, type_handlers)
         elif isinstance(t, Union):
             _generate_union(model, t, type_handlers)
         else:
@@ -135,6 +137,58 @@ $json_definition
 static inline ${jni_type} _net_to_host_${c_name}(vl_api_${c_name}_t _net)
 {
     return (${jni_type}) $type_swap
+}""")
+
+
+def _generate_enumset(model, t, type_handlers):
+    value_type = t.value.type
+    type_handlers.append(_ENUMSET_NET_TO_HOST_TEMPLATE.substitute(
+        c_name=t.name,
+        json_filename=model.json_api_files,
+        json_definition=t.doc,
+        class_FQN=t.jni_name,
+        jni_signature=value_type.jni_signature,
+        jni_type=value_type.jni_type,
+        jni_accessor=value_type.jni_accessor,
+        swap=_generate_scalar_host_to_net_swap(t.value)
+    ))
+
+    type_handlers.append(_ENUMSET_HOST_TO_NET_TEMPLATE.substitute(
+        c_name=t.name,
+        json_filename=model.json_api_files,
+        json_definition=t.doc,
+        class_FQN=t.jni_name,
+        jni_type=value_type.jni_type,
+        type_swap=_generate_scalar_net_to_host_swap(t.value)
+    ))
+
+
+_ENUMSET_NET_TO_HOST_TEMPLATE = Template("""
+/**
+ * Host to network byte order conversion for ${c_name} enum.
+ * Generated based on $json_filename:
+$json_definition
+ */
+static inline void _host_to_net_${c_name}(JNIEnv * env, jobject _host, vl_api_${c_name}_t * _net)
+{
+    jclass enumClass = (*env)->FindClass(env, "${class_FQN}");
+    jmethodID getValueMethod = (*env)->GetMethodID(env, enumClass, "getOptionsValue", "()I");
+    ${jni_type} value = (*env)->CallIntMethod(env, _host, getValueMethod);
+    ${swap};
+}""")
+
+_ENUMSET_HOST_TO_NET_TEMPLATE = Template("""
+/**
+ * Network to host byte order conversion for ${c_name} type.
+ * Generated based on $json_filename:
+$json_definition
+ */
+static inline jobject _net_to_host_${c_name}(JNIEnv * env, vl_api_${c_name}_t _net)
+{
+    jclass enumClass = (*env)->FindClass(env, "${class_FQN}");
+    jmethodID enumInit = (*env)->GetMethodID(env, enumClass, "setOptionsValue", "(I)V");
+    ${jni_type} value = (${jni_type}) $type_swap
+    return (*env)->NewObject(env, enumClass, enumInit, value);
 }""")
 
 

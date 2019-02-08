@@ -142,6 +142,34 @@ class Enum(Type):
         return "_host_to_net_%s(env, %s, &(%s))" % (self.name, host_ref_name, net_ref_name)
 
 
+class EnumSet(Type):
+    def __init__(self, name, value, constants, definition, plugin_name):
+        _java_name = _underscore_to_camelcase_upper(name)
+
+        super(EnumSet, self).__init__(
+            name=name,
+            java_name=_java_name,
+            java_name_fqn="io.fd.vpp.jvpp.%s.types.%s" % (plugin_name, _java_name),
+            jni_signature="Lio/fd/vpp/jvpp/%s/types/%s;" % (plugin_name, _java_name),
+            jni_type="jobject",
+            jni_accessor="Object",
+            host_to_net_function="_host_to_net_%s" % name,
+            net_to_host_function="_net_to_host_%s" % name
+        )
+
+        self.value = value
+        self.constants = constants
+        self.doc = _message_to_javadoc(definition)
+        self.java_name_lower = _underscore_to_camelcase_lower(name)
+        self.vpp_name = "%s%s%s" % (_VPP_TYPE_PREFIX, name, _VPP_TYPE_SUFFIX)
+        # Fully qualified class name used by FindClass function, see:
+        # https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/functions.html#FindClass
+        self.jni_name = "io/fd/vpp/jvpp/%s/types/%s" % (plugin_name, _java_name)
+
+    def get_host_to_net_function(self, host_ref_name, net_ref_name):
+        return "_host_to_net_%s(env, %s, &(%s))" % (self.name, host_ref_name, net_ref_name)
+
+
 class Class(Type):
     def __init__(self, name, crc, fields, definition, plugin_name):
         _java_name = _underscore_to_camelcase_upper(name)
@@ -391,8 +419,10 @@ class JVppModel(object):
                 type = value['type']
                 data = value['data'][1:]
                 try:
-                    if type == 'enum':
+                    if type == 'enum' and "flags" not in name:
                         type = self._parse_enum(name, data)
+                    elif type == 'enum' and "flags" in name:
+                        type = self._parse_enumset(name, data)
                     elif type == 'union':
                         type = self._parse_union(name, data)
                     elif type == 'type':
@@ -467,6 +497,19 @@ class JVppModel(object):
         if not type_name:
             raise ParseException("'enumtype' was not defined for %s" % definition)
         return Enum(name, Field('value', self._types_by_name[type_name]), constants, definition, self.plugin_name)
+
+    def _parse_enumset(self, name, definition):
+        self.logger.debug("Parsing enumset %s: %s", name, definition)
+        constants = []
+        type_name = None
+        for item in definition:
+            if type(item) is dict and 'enumtype' in item:
+                type_name = item['enumtype']
+                continue
+            constants.append({'name': item[0], 'value': item[1]})
+        if not type_name:
+            raise ParseException("'enumtype' was not defined for %s" % definition)
+        return EnumSet(name, Field('value', self._types_by_name[type_name]), constants, definition, self.plugin_name)
 
     def _parse_union(self, name, definition):
         self.logger.debug("Parsing union %s: %s", name, definition)
