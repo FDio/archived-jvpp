@@ -64,6 +64,10 @@ $constants;
         }
         return null;
     }
+
+    public $value_type getValue() {
+        return value;
+    }
 }
 """)
 

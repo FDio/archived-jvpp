@@ -121,7 +121,7 @@ $json_definition
 static inline void _host_to_net_${c_name}(JNIEnv * env, jobject _host, vl_api_${c_name}_t * _net)
 {
     jclass enumClass = (*env)->FindClass(env, "${class_FQN}");
-    jmethodID getValueMethod = (*env)->GetMethodID(env, enumClass, "ordinal", "()I");
+    jmethodID getValueMethod = (*env)->GetMethodID(env, enumClass, "getValue", "()I");
     ${jni_type} value = (*env)->CallIntMethod(env, _host, getValueMethod);
     ${swap};
 }""")
