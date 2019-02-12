@@ -93,10 +93,10 @@ macro(subdirlist dirlist dirpath)
     endforeach ()
 endmacro()
 
-#list(APPEND dirlist $ENV{JAVA_HOME})
-#subdirlist(dirlist /usr/lib/jvm)
-#subdirlist(dirlist /usr/lib64/jvm)
-#
+list(APPEND dirlist $ENV{JAVA_HOME})
+subdirlist(dirlist /usr/lib/jvm)
+subdirlist(dirlist /usr/lib64/jvm)
+
 #unset(JAVA_HOME_SET)
 #find_path(JAVA_HOME_SET NAMES include/jni.h PATHS ${dirlist})
 #if (NOT JAVA_HOME_SET)
