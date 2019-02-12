@@ -14,34 +14,12 @@
 export WS_ROOT=$(CURDIR)
 export BR=$(WS_ROOT)/build-root
 CCACHE_DIR?=$(BR)/.ccache
-GDB?=gdb
-PLATFORM?=vpp
-SAMPLE_PLUGIN?=no
+PLATFORM?=jvpp
 STARTUP_DIR?=$(PWD)
 MACHINE=$(shell uname -m)
 SUDO?=sudo
 
 ,:=,
-define disable_plugins
-$(if $(1), \
-  "plugins {" \
-  $(patsubst %,"plugin %_plugin.so { disable }",$(subst $(,), ,$(1))) \
-  " }" \
-  ,)
-endef
-
-MINIMAL_STARTUP_CONF="							\
-unix { 									\
-	interactive 							\
-	cli-listen /run/vpp/cli.sock					\
-	gid $(shell id -g)						\
-	$(if $(wildcard startup.vpp),"exec startup.vpp",)		\
-}									\
-$(if $(DPDK_CONFIG), "dpdk { $(DPDK_CONFIG) }",)			\
-$(call disable_plugins,$(DISABLED_PLUGINS))				\
-"
-
-GDB_ARGS= -ex "handle SIGUSR1 noprint nostop"
 
 #
 # OS Detection
@@ -167,55 +145,17 @@ CONFIRM=-y
 FORCE=--force-yes
 endif
 
-TARGETS = vpp
+TARGETS = jvpp
 
-ifneq ($(SAMPLE_PLUGIN),no)
-TARGETS += sample-plugin
-endif
 
-.PHONY: help wipe wipe-release build build-release rebuild rebuild-release
-.PHONY: run run-release debug debug-release build-vat run-vat pkg-deb pkg-rpm
-.PHONY: ctags cscope
-.PHONY: test test-debug retest retest-debug test-doc test-wipe-doc test-help test-wipe
-.PHONY: test-cov test-wipe-cov
+.PHONY: help
+.PHONY: install-dep
 
-define banner
-	@echo "========================================================================"
-	@echo " $(1)"
-	@echo "========================================================================"
-	@echo " "
-endef
 
 help:
 	@echo "Make Targets:"
 	@echo " install-dep         - install software dependencies"
 	@echo ""
-
-$(BR)/.deps.ok:
-ifeq ($(findstring y,$(UNATTENDED)),y)
-	make install-dep
-endif
-ifeq ($(filter ubuntu debian,$(OS_ID)),$(OS_ID))
-	@MISSING=$$(apt-get install -y -qq -s $(DEB_DEPENDS) | grep "^Inst ") ; \
-	if [ -n "$$MISSING" ] ; then \
-	  echo "\nPlease install missing packages: \n$$MISSING\n" ; \
-	  echo "by executing \"make install-dep\"\n" ; \
-	  exit 1 ; \
-	fi ; \
-	exit 0
-else ifneq ("$(wildcard /etc/redhat-release)","")
-	@for i in $(RPM_DEPENDS) ; do \
-	    RPM=$$(basename -s .rpm "$${i##*/}" | cut -d- -f1,2,3)  ;	\
-	    MISSING+=$$(rpm -q $$RPM | grep "^package")	   ;    \
-	done							   ;	\
-	if [ -n "$$MISSING" ] ; then \
-	  echo "Please install missing RPMs: \n$$MISSING\n" ; \
-	  echo "by executing \"make install-dep\"\n" ; \
-	  exit 1 ; \
-	fi ; \
-	exit 0
-endif
-	@touch $@
 
 install-dep:
 ifeq ($(filter ubuntu debian,$(OS_ID)),$(OS_ID))
@@ -254,15 +194,3 @@ endif
 define make
 	@make -C $(BR) PLATFORM=$(PLATFORM) TAG=$(1) $(2)
 endef
-
-$(BR)/scripts/.version:
-ifneq ("$(wildcard /etc/redhat-release)","")
-	$(shell $(BR)/scripts/version rpm-string > $(BR)/scripts/.version)
-else
-	$(shell $(BR)/scripts/version > $(BR)/scripts/.version)
-endif
-
-DIST_FILE = $(BR)/vpp-$(shell src/scripts/version).tar
-DIST_SUBDIR = vpp-$(shell src/scripts/version|cut -f1 -d-)
-
-
