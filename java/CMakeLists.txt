@@ -308,7 +308,7 @@ if (${RELEASE_ID} IN_LIST DebianBasedOS)
     message("    Depends on: ${CPACK_DEBIAN_PACKAGE_DEPENDS}\n")
 
 elseif (${RELEASE_ID} IN_LIST RHBasedOS)
-    set(CPACK_GENERATOR DEB)
+    set(CPACK_GENERATOR RPM)
     # Excluding /usr/share/java top level directory due to conflict with javapackages-tools (openjdk dependency)
     set(CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION "/usr/share/java")
     set(CPACK_RPM_PACKAGE_NAME "${CPACK_PACKAGE_NAME}")
