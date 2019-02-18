@@ -102,20 +102,32 @@ find_path(JAVA_HOME_SET NAMES include/jni.h PATHS ${dirlist})
 if (NOT JAVA_HOME_SET)
   message("JAVA_HOME is not found")
 else()
-  message("JAVA HOME: ${JAVA_HOME}")
   set(ENV{JAVA_HOME} "${JAVA_HOME_SET}")
 endif()
 
 message("\nJAVA:")
-message("    JAVA_HOME: $ENV{JAVA_HOME}")
-
+message("    Java home: $ENV{JAVA_HOME}")
 find_package(Java 1.8 REQUIRED COMPONENTS Development)
-message("JAVA: ${Java}")
 get_filename_component(jvm_path ${Java_JAVAC_EXECUTABLE} DIRECTORY)
 set(Java_INCLUDE_DIRS ${jvm_path}/../include ${jvm_path}/../include/linux)
 
 message("    Java headers: ${Java_INCLUDE_DIRS}")
 message("    Java compiler: ${Java_JAVAC_EXECUTABLE}")
+
+execute_process(COMMAND ./scripts/verify-installed vpp* OUTPUT_VARIABLE VPP_INSTALLED)
+string(STRIP "${VPP_INSTALLED}" VPP_INSTALLED)
+
+if (${VPP_INSTALLED} MATCHES "vpp-dev")
+  message("\nVPP instalation found.")
+  message("Packages: \n${VPP_INSTALLED}")
+else()
+  if (${RELEASE_ID} IN_LIST DebianBasedOS)
+    set(REQUIREMENTS "vpp, vpp-dev, libvppinfra, vpp-plugin-core")
+  else()
+    set(REQUIREMENTS "vpp, vpp-devel, vpp-plugins")
+  endif()
+  message(FATAL_ERROR "Error VPP is not installed.\nPlease install: ${REQUIREMENTS}.")
+endif()
+
 add_subdirectory(java)
 
-#find_package(vpp REQUIRED)

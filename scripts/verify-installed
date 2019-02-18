@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Copyright (c) 2019 Cisco and/or its affiliates.
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,12 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-echo "JVPP cleanup started"
-make clean
-rm -rf build-root/packages/*
-rm -rf java/*.jar
-# clean cmake cache
-find . -iwholename '*cmake*' -not -name CMakeLists.txt -delete
-# clean cpack cache
-find . -iwholename '*cpack*' -delete
-echo "... cleanup finished."
+package=$1
+source /etc/os-release
+
+if [[ "$ID" = "centos" ]]; then
+  yum list installed | grep ${package}
+  exit
+else
+  dpkg -l ${package} |grep ii | grep ${package}
+fi
+

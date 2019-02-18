@@ -17,11 +17,11 @@ path=$( cd "$(dirname "${BASH_SOURCE}")" ; pwd -P )
 
 cd "$path"
 
-if [ -f .version ]; then
+if [[ -f .version ]]; then
     vstring=$(cat .version)
 else
     vstring=$(git describe)
-    if [ $? != 0 ]; then
+    if [[ $? != 0 ]]; then
       exit 1
     fi
 fi
@@ -30,30 +30,57 @@ TAG=$(echo ${vstring} | cut -d- -f1 | sed -e 's/^v//')
 ADD=$(echo ${vstring} | cut -s -d- -f2)
 
 git rev-parse 2> /dev/null
-if [ $? == 0 ]; then
+if [[ $? == 0 ]]; then
     CMT=$(git describe --dirty --long | cut -s -d- -f3,4)
 else
     CMT=$(echo ${vstring} | cut -s -d- -f3,4)
 fi
-CMTR=$(echo $CMT | sed 's/-/_/')
+CMTR=$(echo ${CMT} | sed 's/-/_/')
 
-if [ -n "${BUILD_NUMBER}" ]; then
+if [[ -n "${BUILD_NUMBER}" ]]; then
        BLD="~b${BUILD_NUMBER}"
 fi
 
-if [ "$1" = "rpm-version" ]; then
+if [[ "$1" = "rpm-version" ]]; then
   echo ${TAG}
   exit
 fi
 
-if [ "$1" = "rpm-release" ]; then
-  [ -z "${ADD}" ] && echo release && exit
+if [[ "$1" = "rpm-release" ]]; then
+  [[ -z "${ADD}" ]] && echo release && exit
   echo ${ADD}${CMTR:+~${CMTR}}${BLD}
   exit
 fi
 
-  if [ -n "${ADD}" ]; then
-    if [ "$1" = "rpm-string" ]; then
+if [[ "$1" = "deb-vpp-version" ]]; then
+  vpp_version=`dpkg -l vpp |grep vpp |awk '{print $3}'`
+  echo ${vpp_version}
+  exit
+fi
+
+if [[ "$1" = "rpm-vpp-version" ]]; then
+  vpp_version=`yum list installed vpp |grep vpp |awk -F' ' '{print $2}'`
+  echo ${vpp_version}
+  exit
+fi
+
+
+if [[ "$1" = "os-version-id" ]]; then
+  [[ -z "${ADD}" ]] && echo release && exit
+  source /etc/os-release
+  echo ${VERSION_ID}
+  exit
+fi
+if [[ "$1" = "os-id" ]]; then
+  [[ -z "${ADD}" ]] && echo release && exit
+  source /etc/os-release
+  echo ${ID}
+  exit
+fi
+
+
+  if [[ -n "${ADD}" ]]; then
+    if [[ "$1" = "rpm-string" ]]; then
       echo ${TAG}-${ADD}${CMTR:+~${CMTR}}${BLD}
     else
       echo ${TAG}-${ADD}${CMT:+~${CMT}}${BLD}
