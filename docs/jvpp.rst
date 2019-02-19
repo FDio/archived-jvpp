@@ -149,9 +149,8 @@ Installing JVPP manually to local maven repository
 --------------------------------------------------
 
 Once JVPP is successfully built, you can install it to local .m2 repository.
-To do so use provided script in JVPP root directory:
+To do so use provided script in JVPP scripts directory:
 
 .. code-block:: console
 
-  ./install_jvpp.sh
-
+  ./scripts/install_jvpp.sh

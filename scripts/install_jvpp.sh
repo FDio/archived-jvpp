@@ -13,12 +13,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-MAIN_VER="$(./version | cut -f1 -d"-")"
-VERSION="$(./version | cut -f1 -d"~")"
+dir=$( cd "$(dirname "${BASH_SOURCE}")" ; pwd -P )
 
-echo "Main version: ${MAIN_VER}"
-echo "full version: ${VERSION}"
-cd ./java
+cd "$dir"
+
+MAIN_VER="$(../version | cut -f1 -d"-")"
+RLS_VER="$(../version | cut -f1 -d"~" | cut -f2 -d"-")"
+
+#update version based on release version rc* -> SNAPSHOT or release -> main version
+if [[ ${RLS_VER} == rc* ]]; then
+    VERSION=${MAIN_VER}-SNAPSHOT
+elif [[ ${RLS_VER} == release ]]; then
+    VERSION=${MAIN_VER}
+else
+    echo "Error unrecognized release version. Exiting maven installation."
+    exit 1;
+fi
+
+echo "Main version:" ${MAIN_VER}
+echo "Maven artifacts version:" ${VERSION}
+
+cd "$dir/../java/"
 
 echo "Installing jars to Maven:"
 mvn install:install-file -Dfile=jvpp-registry-${MAIN_VER}.jar -DgroupId=io.fd.vpp     -DartifactId=jvpp-registry -Dversion=${VERSION} -Dpackaging=jar
