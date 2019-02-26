@@ -195,6 +195,7 @@ unset(PPPOE_JSON_FILE)
 unset(IOAM_TRACE_JSON_FILE)
 unset(IOAM_POT_JSON_FILE)
 unset(IOAM_EXPORT_JSON_FILE)
+unset(IKEV2_JSON_FILE)
 
 if (${RELEASE_ID} IN_LIST DebianBasedOS)
     execute_process(COMMAND dpkg-query -L vpp-plugin-core
@@ -237,6 +238,9 @@ foreach (FILE ${pluginfiles})
     if ("${FILE}" MATCHES "/ioam_export.api.json")
         set(IOAM_EXPORT_JSON_FILE ${FILE})
     endif ()
+    if ("${FILE}" MATCHES "/ikev2.api.json")
+        set(IKEV2_JSON_FILE ${FILE})
+    endif ()
 endforeach ()
 
 if (ACL_JSON_FILE)
@@ -269,6 +273,10 @@ endif ()
 
 if (IOAM_EXPORT_JSON_FILE)
     java_api_binding(ioamexport ioam_export ${IOAM_EXPORT_JSON_FILE})
+endif ()
+
+if (IKEV2_JSON_FILE)
+    java_api_binding(ikev2 ikev2 ${IKEV2_JSON_FILE})
 endif ()
 
 # Package Generator  #######################################################

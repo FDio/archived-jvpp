@@ -44,5 +44,6 @@ mvn install:install-file -Dfile=jvpp-ioamexport-${MAIN_VER}.jar -DgroupId=io.fd.
 mvn install:install-file -Dfile=jvpp-nat-${MAIN_VER}.jar -DgroupId=io.fd.vpp     -DartifactId=jvpp-nat -Dversion=${VERSION} -Dpackaging=jar
 mvn install:install-file -Dfile=jvpp-nsh-${MAIN_VER}.jar -DgroupId=io.fd.vpp     -DartifactId=jvpp-nsh -Dversion=${VERSION} -Dpackaging=jar
 mvn install:install-file -Dfile=jvpp-acl-${MAIN_VER}.jar -DgroupId=io.fd.vpp     -DartifactId=jvpp-acl -Dversion=${VERSION} -Dpackaging=jar
+mvn install:install-file -Dfile=jvpp-ikev2-${MAIN_VER}.jar -DgroupId=io.fd.vpp     -DartifactId=jvpp-ikev2 -Dversion=${VERSION} -Dpackaging=jar
 
 echo "all done."
