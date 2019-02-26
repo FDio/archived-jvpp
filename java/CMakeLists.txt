@@ -149,6 +149,7 @@ elseif (${RELEASE_ID} IN_LIST RHBasedOS)
             COMMAND grep -v gbp
             COMMAND grep -v gtpu
             COMMAND grep -v igmp
+            COMMAND grep -v ikev2
             COMMAND grep -v ioam_cache
             COMMAND grep -v ioam_export
             COMMAND grep -v ioam_vxlan_gpe
