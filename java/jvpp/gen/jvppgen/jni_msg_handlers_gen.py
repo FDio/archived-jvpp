@@ -67,7 +67,7 @@ $err_handler
     // User does not have to provide callbacks for all VPP messages.
     // We are ignoring messages that are not supported by user.
     (*env)->ExceptionClear(env); // just in case exception occurred in different place and was not properly cleared
-    jmethodID callbackMethod = (*env)->GetMethodID(env, plugin_main->callbackClass, "on${dto_name}", "(Lio/fd/vpp/jvpp/${plugin_name}/dto/${dto_name};)V");
+    jmethodID callbackMethod = (*env)->GetMethodID(env, plugin_main->callbackClass, "on${dto_name}", "(Lio/fd/jvpp/${plugin_name}/dto/${dto_name};)V");
     exc = (*env)->ExceptionOccurred(env);
     if (exc) {
         clib_warning("Unable to extract on${dto_name} method reference from ${plugin_name} plugin's callbackClass. Ignoring message.\\n");

@@ -65,10 +65,10 @@ def _generate_class_cache(plugin_name, messages):
             continue
         references.append((
             msg.java_name_lower,
-            'io/fd/vpp/jvpp/%s/dto/%s' % (plugin_name, msg.java_name_upper)
+            'io/fd/jvpp/%s/dto/%s' % (plugin_name, msg.java_name_upper)
         ))
 
-    references.append(('callbackException', 'io/fd/vpp/jvpp/VppCallbackException'))
+    references.append(('callbackException', 'io/fd/jvpp/VppCallbackException'))
 
     return _CLASS_CACHE_TEMPLATE.substitute(
         class_references=_generate_class_references(references),

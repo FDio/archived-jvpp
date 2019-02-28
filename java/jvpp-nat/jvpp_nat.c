@@ -32,19 +32,19 @@
 
 #include <jvpp-common/jvpp_common.h>
 
-#include "jvpp-nat/io_fd_vpp_jvpp_nat_JVppNatImpl.h"
+#include "jvpp-nat/io_fd_jvpp_nat_JVppNatImpl.h"
 #include "jvpp_nat.h"
 #include "jvpp-nat/jvpp_nat_gen.h"
 
 /*
- * Class:     io_fd_vpp_jvpp_nat_JVppNatImpl
+ * Class:     io_fd_jvpp_nat_JVppNatImpl
  * Method:    init0
  * Signature: (JI)V
  */
-JNIEXPORT void JNICALL Java_io_fd_vpp_jvpp_nat_JVppNatImpl_init0
+JNIEXPORT void JNICALL Java_io_fd_jvpp_nat_JVppNatImpl_init0
   (JNIEnv *env, jclass clazz, jobject callback, jlong queue_address, jint my_client_index) {
   nat_main_t * plugin_main = &nat_main;
-  clib_warning ("Java_io_fd_vpp_jvpp_nat_JVppNatImpl_init0");
+  clib_warning ("Java_io_fd_jvpp_nat_JVppNatImpl_init0");
 
   plugin_main->my_client_index = my_client_index;
   plugin_main->vl_input_queue = uword_to_pointer (queue_address, svm_queue_t *);
@@ -69,7 +69,7 @@ JNIEXPORT void JNICALL Java_io_fd_vpp_jvpp_nat_JVppNatImpl_init0
   #undef _
 }
 
-JNIEXPORT void JNICALL Java_io_fd_vpp_jvpp_nat_JVppNatImpl_close0
+JNIEXPORT void JNICALL Java_io_fd_jvpp_nat_JVppNatImpl_close0
 (JNIEnv *env, jclass clazz) {
   nat_main_t * plugin_main = &nat_main;
 

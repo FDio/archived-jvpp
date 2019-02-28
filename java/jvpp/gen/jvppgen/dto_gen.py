@@ -74,7 +74,7 @@ package $plugin_package.dto;
 $json_definition
  * </pre>
  */
-public final class $class_name implements io.fd.vpp.jvpp.dto.$base_type {
+public final class $class_name implements io.fd.jvpp.dto.$base_type {
 $fields
 $hash_code
 $equals
@@ -94,7 +94,7 @@ def _generate_send(model, msg):
 
 _SEND_TEMPLATE = Template("""
     @Override
-    public int send(final io.fd.vpp.jvpp.JVpp jvpp) throws io.fd.vpp.jvpp.VppInvocationException {
+    public int send(final io.fd.jvpp.JVpp jvpp) throws io.fd.jvpp.VppInvocationException {
         return (($plugin_package.JVpp${plugin_name})jvpp).$method_name($args);
     }""")
 
@@ -124,7 +124,7 @@ package $plugin_package.dto;
 $json_definition
  * </pre>
  */
-public final class $class_name implements io.fd.vpp.jvpp.dto.JVppReply<$plugin_package.dto.$request_name> {
+public final class $class_name implements io.fd.jvpp.dto.JVppReply<$plugin_package.dto.$request_name> {
 $fields
 $hash_code
 $equals
@@ -192,12 +192,12 @@ package $plugin_package.dto;
 $json_definition
  * </pre>
  */
-public final class ${details_class}ReplyDump implements io.fd.vpp.jvpp.dto.JVppReplyDump<${plugin_package}.dto.${dump_class}, ${plugin_package}.dto.${details_class}> {
+public final class ${details_class}ReplyDump implements io.fd.jvpp.dto.JVppReplyDump<${plugin_package}.dto.${dump_class}, ${plugin_package}.dto.${details_class}> {
 
     public java.util.List<${details_class}> ${details_field} = new java.util.ArrayList<>();
 
     @Override
-    @io.fd.vpp.jvpp.coverity.SuppressFBWarnings("UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD")
+    @io.fd.jvpp.coverity.SuppressFBWarnings("UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD")
     public int hashCode() {
         return java.util.Objects.hash(${details_field});
     }

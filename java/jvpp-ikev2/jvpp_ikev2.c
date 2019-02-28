@@ -32,19 +32,19 @@
 
 #include <jvpp-common/jvpp_common.h>
 
-#include "jvpp-ikev2/io_fd_vpp_jvpp_ikev2_JVppIkev2Impl.h"
+#include "jvpp-ikev2/io_fd_jvpp_ikev2_JVppIkev2Impl.h"
 #include "jvpp_ikev2.h"
 #include "jvpp-ikev2/jvpp_ikev2_gen.h"
 
 /*
- * Class:     io_fd_vpp_jvpp_ikev2_JVppIkev2Impl
+ * Class:     io_fd_jvpp_ikev2_JVppIkev2Impl
  * Method:    init0
  * Signature: (JI)V
  */
-JNIEXPORT void JNICALL Java_io_fd_vpp_jvpp_ikev2_JVppIkev2Impl_init0
+JNIEXPORT void JNICALL Java_io_fd_jvpp_ikev2_JVppIkev2Impl_init0
   (JNIEnv *env, jclass clazz, jobject callback, jlong queue_address, jint my_client_index) {
   ikev2_main_t * plugin_main = &ikev2_main;
-  clib_warning ("Java_io_fd_vpp_jvpp_ikev2_JVppIkev2Impl_init0");
+  clib_warning ("Java_io_fd_jvpp_ikev2_JVppIkev2Impl_init0");
 
   plugin_main->my_client_index = my_client_index;
   plugin_main->vl_input_queue = uword_to_pointer (queue_address, svm_queue_t *);
@@ -69,7 +69,7 @@ JNIEXPORT void JNICALL Java_io_fd_vpp_jvpp_ikev2_JVppIkev2Impl_init0
   #undef _
 }
 
-JNIEXPORT void JNICALL Java_io_fd_vpp_jvpp_ikev2_JVppIkev2Impl_close0
+JNIEXPORT void JNICALL Java_io_fd_jvpp_ikev2_JVppIkev2Impl_close0
 (JNIEnv *env, jclass clazz) {
   ikev2_main_t * plugin_main = &ikev2_main;
 

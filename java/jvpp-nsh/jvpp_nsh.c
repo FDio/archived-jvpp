@@ -31,19 +31,19 @@
 
 #include <jvpp-common/jvpp_common.h>
 
-#include "jvpp-nsh/io_fd_vpp_jvpp_nsh_JVppNshImpl.h"
+#include "jvpp-nsh/io_fd_jvpp_nsh_JVppNshImpl.h"
 #include "jvpp_nsh.h"
 #include "jvpp-nsh/jvpp_nsh_gen.h"
 
 /*
- * Class:     io_fd_vpp_jvpp_nsh_JVppnshImpl
+ * Class:     io_fd_jvpp_nsh_JVppnshImpl
  * Method:    init0
  * Signature: (JI)V
  */
-JNIEXPORT void JNICALL Java_io_fd_vpp_jvpp_nsh_JVppNshImpl_init0
+JNIEXPORT void JNICALL Java_io_fd_jvpp_nsh_JVppNshImpl_init0
   (JNIEnv *env, jclass clazz, jobject callback, jlong queue_address, jint my_client_index) {
   nsh_main_t * plugin_main = &nsh_main;
-  clib_warning ("Java_io_fd_vpp_jvpp_nsh_JVppNshImpl_init0");
+  clib_warning ("Java_io_fd_jvpp_nsh_JVppNshImpl_init0");
 
   plugin_main->my_client_index = my_client_index;
   plugin_main->vl_input_queue = (svm_queue_t *)queue_address;
@@ -68,7 +68,7 @@ JNIEXPORT void JNICALL Java_io_fd_vpp_jvpp_nsh_JVppNshImpl_init0
   #undef _
 }
 
-JNIEXPORT void JNICALL Java_io_fd_vpp_jvpp_nsh_JVppNshImpl_close0
+JNIEXPORT void JNICALL Java_io_fd_jvpp_nsh_JVppNshImpl_close0
 (JNIEnv *env, jclass clazz) {
   nsh_main_t * plugin_main = &nsh_main;
 

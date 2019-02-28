@@ -106,7 +106,7 @@ Getting JVPP jar
 
 VPP provides java bindings which can be downloaded at:
 
-* https://nexus.fd.io/content/repositories/fd.io.release/io/fd/vpp/jvpp-core/19.01/jvpp-core-19.01.jar
+* https://nexus.fd.io/content/repositories/fd.io.release/io/fd/jvpp/jvpp-core/19.04/jvpp-core-19.04.jar
 
 Getting JVPP via maven
 ------------------------------------
@@ -136,9 +136,9 @@ For more information on setting up maven repositories in settings.xml, please lo
 .. code-block:: console
 
  <dependency>
-   <groupId>io.fd.vpp</groupId>
+   <groupId>io.fd.jvpp</groupId>
    <artifactId>jvpp-core</artifactId>
-   <version>19.01</version>
+   <version>19.04</version>
  </dependency>
 
 For more information on maven dependency managment, please look at:

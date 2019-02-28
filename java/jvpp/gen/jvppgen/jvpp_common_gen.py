@@ -32,14 +32,14 @@ def generate_hash_code(fields):
 
 _HASH_CODE_TEMPLATE = Template("""
     @Override
-    @io.fd.vpp.jvpp.coverity.SuppressFBWarnings("UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD")
+    @io.fd.jvpp.coverity.SuppressFBWarnings("UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD")
     public int hashCode() {
         return java.util.Objects.hash($fields);
     }""")
 
 _HASH_CODE_SINGLE_ARRAY_TEMPLATE = Template("""
     @Override
-    @io.fd.vpp.jvpp.coverity.SuppressFBWarnings("UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD")
+    @io.fd.jvpp.coverity.SuppressFBWarnings("UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD")
     public int hashCode() {
         return java.util.Arrays.hashCode($array_field);
     }""")

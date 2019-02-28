@@ -137,10 +137,10 @@ JVpp Java      |                             |
 
 == Package structure
 
-* *io.fd.vpp.jvpp* - top level package for generated JVpp interface+ implementation and hand-crafted
+* *io.fd.jvpp* - top level package for generated JVpp interface+ implementation and hand-crafted
 VppConnection interface + implementation - packaged as jvpp-registry-version.jar
 
-* *io.fd.vpp.jvpp.[plugin]* - top level package for generated JVpp interface + implementation
+* *io.fd.jvpp.[plugin]* - top level package for generated JVpp interface + implementation
 + plugin's API tests - packaged as jvpp-[plugin]-version.jar
 
 ** *dto* - package for DTOs generated from VPP API structures + base/marker hand-crafted interfaces

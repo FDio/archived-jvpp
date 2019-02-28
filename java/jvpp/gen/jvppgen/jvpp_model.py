@@ -19,7 +19,7 @@ from collections import OrderedDict
 
 import binascii
 
-BASE_PACKAGE = "io.fd.vpp.jvpp"
+BASE_PACKAGE = "io.fd.jvpp"
 
 
 class ParseException(Exception):
@@ -34,8 +34,8 @@ class Type(object):
 
         :param name: name of type as defined in .api file, e.g. u8, u32[] or mac_entry
         :param java_name: corresponding java name, e.g. byte, int[] or MacEntry
-        :param java_name_fqn: fully qualified java name, e.g. io.fd.vpp.jvpp.core.types.MacEntry
-        :param jni_signature: JNI Type signature, e.g. B, [I or Lio.fd.vpp.jvpp.core.types.MacEntry;
+        :param java_name_fqn: fully qualified java name, e.g. io.fd.jvpp.core.types.MacEntry
+        :param jni_signature: JNI Type signature, e.g. B, [I or Lio.fd.jvpp.core.types.MacEntry;
                               See https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/types.html#type_signatures
         :param jni_type: JNI reference type, e.g. jbyte jintArray, jobject
                          See https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/types.html#reference_types
@@ -121,8 +121,8 @@ class Enum(Type):
         super(Enum, self).__init__(
             name=name,
             java_name=_java_name,
-            java_name_fqn="io.fd.vpp.jvpp.%s.types.%s" % (plugin_name, _java_name),
-            jni_signature="Lio/fd/vpp/jvpp/%s/types/%s;" % (plugin_name, _java_name),
+            java_name_fqn="io.fd.jvpp.%s.types.%s" % (plugin_name, _java_name),
+            jni_signature="Lio/fd/jvpp/%s/types/%s;" % (plugin_name, _java_name),
             jni_type="jobject",
             jni_accessor="Object",
             host_to_net_function="_host_to_net_%s" % name,
@@ -136,7 +136,7 @@ class Enum(Type):
         self.vpp_name = "%s%s%s" % (_VPP_TYPE_PREFIX, name, _VPP_TYPE_SUFFIX)
         # Fully qualified class name used by FindClass function, see:
         # https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/functions.html#FindClass
-        self.jni_name = "io/fd/vpp/jvpp/%s/types/%s" % (plugin_name, _java_name)
+        self.jni_name = "io/fd/jvpp/%s/types/%s" % (plugin_name, _java_name)
 
     def get_host_to_net_function(self, host_ref_name, net_ref_name):
         return "_host_to_net_%s(env, %s, &(%s))" % (self.name, host_ref_name, net_ref_name)
@@ -149,8 +149,8 @@ class EnumSet(Type):
         super(EnumSet, self).__init__(
             name=name,
             java_name=_java_name,
-            java_name_fqn="io.fd.vpp.jvpp.%s.types.%s" % (plugin_name, _java_name),
-            jni_signature="Lio/fd/vpp/jvpp/%s/types/%s;" % (plugin_name, _java_name),
+            java_name_fqn="io.fd.jvpp.%s.types.%s" % (plugin_name, _java_name),
+            jni_signature="Lio/fd/jvpp/%s/types/%s;" % (plugin_name, _java_name),
             jni_type="jobject",
             jni_accessor="Object",
             host_to_net_function="_host_to_net_%s" % name,
@@ -164,7 +164,7 @@ class EnumSet(Type):
         self.vpp_name = "%s%s%s" % (_VPP_TYPE_PREFIX, name, _VPP_TYPE_SUFFIX)
         # Fully qualified class name used by FindClass function, see:
         # https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/functions.html#FindClass
-        self.jni_name = "io/fd/vpp/jvpp/%s/types/%s" % (plugin_name, _java_name)
+        self.jni_name = "io/fd/jvpp/%s/types/%s" % (plugin_name, _java_name)
 
     def get_host_to_net_function(self, host_ref_name, net_ref_name):
         return "_host_to_net_%s(env, %s, &(%s))" % (self.name, host_ref_name, net_ref_name)
@@ -177,8 +177,8 @@ class Class(Type):
         super(Class, self).__init__(
             name=name,
             java_name=_java_name,
-            java_name_fqn="io.fd.vpp.jvpp.%s.types.%s" % (plugin_name, _java_name),
-            jni_signature="Lio/fd/vpp/jvpp/%s/types/%s;" % (plugin_name, _java_name),
+            java_name_fqn="io.fd.jvpp.%s.types.%s" % (plugin_name, _java_name),
+            jni_signature="Lio/fd/jvpp/%s/types/%s;" % (plugin_name, _java_name),
             jni_type="jobject",
             jni_accessor="Object",
             host_to_net_function="_host_to_net_%s" % name,
@@ -192,7 +192,7 @@ class Class(Type):
         self.vpp_name = "%s%s%s" % (_VPP_TYPE_PREFIX, name, _VPP_TYPE_SUFFIX)
         # Fully qualified class name used by FindClass function, see:
         # https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/functions.html#FindClass
-        self.jni_name = "io/fd/vpp/jvpp/%s/types/%s" % (plugin_name, _java_name)
+        self.jni_name = "io/fd/jvpp/%s/types/%s" % (plugin_name, _java_name)
 
     def get_host_to_net_function(self, host_ref_name, net_ref_name):
         return "_host_to_net_%s(env, %s, &(%s))" % (self.name, host_ref_name, net_ref_name)
@@ -205,8 +205,8 @@ class Union(Type):
         super(Union, self).__init__(
             name=name,
             java_name=_java_name,
-            java_name_fqn="io.fd.vpp.jvpp.%s.types.%s" % (plugin_name, _java_name),
-            jni_signature="Lio/fd/vpp/jvpp/%s/types/%s;" % (plugin_name, _java_name),
+            java_name_fqn="io.fd.jvpp.%s.types.%s" % (plugin_name, _java_name),
+            jni_signature="Lio/fd/jvpp/%s/types/%s;" % (plugin_name, _java_name),
             jni_type="jobject",
             jni_accessor="Object",
             host_to_net_function="_host_to_net_%s" % name,
@@ -220,7 +220,7 @@ class Union(Type):
         self.vpp_name = "%s%s%s" % (_VPP_TYPE_PREFIX, name, _VPP_TYPE_SUFFIX)
         # Fully qualified class name used by FindClass function, see:
         # https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/functions.html#FindClass
-        self.jni_name = "io/fd/vpp/jvpp/%s/types/%s" % (plugin_name, _java_name)
+        self.jni_name = "io/fd/jvpp/%s/types/%s" % (plugin_name, _java_name)
 
     def get_host_to_net_function(self, host_ref_name, net_ref_name):
         return "_host_to_net_%s(env, %s, &(%s))" % (self.name, host_ref_name, net_ref_name)

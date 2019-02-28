@@ -32,19 +32,19 @@
 
 #include <jvpp-common/jvpp_common.h>
 
-#include "jvpp-ioamtrace/io_fd_vpp_jvpp_ioamtrace_JVppIoamtraceImpl.h"
+#include "jvpp-ioamtrace/io_fd_jvpp_ioamtrace_JVppIoamtraceImpl.h"
 #include "jvpp_ioam_trace.h"
 #include "jvpp-ioamtrace/jvpp_ioamtrace_gen.h"
 
 /*
- * Class:     io_fd_vpp_jvpp_ioamtrace_JVppIoamtraceImpl
+ * Class:     io_fd_jvpp_ioamtrace_JVppIoamtraceImpl
  * Method:    init0
  * Signature: (JI)V
  */
-JNIEXPORT void JNICALL Java_io_fd_vpp_jvpp_ioamtrace_JVppIoamtraceImpl_init0
+JNIEXPORT void JNICALL Java_io_fd_jvpp_ioamtrace_JVppIoamtraceImpl_init0
   (JNIEnv *env, jclass clazz, jobject callback, jlong queue_address, jint my_client_index) {
   ioamtrace_main_t * plugin_main = &ioamtrace_main;
-  clib_warning ("Java_io_fd_vpp_jvpp_ioamtrace_JVppIoamtraceImpl_init0");
+  clib_warning ("Java_io_fd_jvpp_ioamtrace_JVppIoamtraceImpl_init0");
 
   plugin_main->my_client_index = my_client_index;
   plugin_main->vl_input_queue = uword_to_pointer (queue_address, svm_queue_t *);
@@ -69,7 +69,7 @@ JNIEXPORT void JNICALL Java_io_fd_vpp_jvpp_ioamtrace_JVppIoamtraceImpl_init0
   #undef _
 }
 
-JNIEXPORT void JNICALL Java_io_fd_vpp_jvpp_ioamtrace_JVppIoamtraceImpl_close0
+JNIEXPORT void JNICALL Java_io_fd_jvpp_ioamtrace_JVppIoamtraceImpl_close0
 (JNIEnv *env, jclass clazz) {
   ioamtrace_main_t * plugin_main = &ioamtrace_main;
 

@@ -68,7 +68,7 @@ _JNI_IMPL_TEMPLATE = Template("""
  * Generated based on $json_filename:
 $json_definition
  */
-JNIEXPORT jint JNICALL Java_io_fd_vpp_jvpp_${plugin_name}_JVpp${plugin_java_name}Impl_${java_method_name}0
+JNIEXPORT jint JNICALL Java_io_fd_jvpp_${plugin_name}_JVpp${plugin_java_name}Impl_${java_method_name}0
 (JNIEnv * env, jclass clazz${arguments}) {
     ${plugin_name}_main_t *plugin_main = &${plugin_name}_main;
     vl_api_${c_name}_t * mp;
@@ -98,7 +98,7 @@ $msg_initialization
 
 # TODO: cache method and field identifiers to achieve better performance
 # https://jira.fd.io/browse/HONEYCOMB-42
-_REQUEST_CLASS_TEMPLATE = Template("""    jclass requestClass = (*env)->FindClass(env, "io/fd/vpp/jvpp/${plugin_name}/dto/${java_dto_name}");
+_REQUEST_CLASS_TEMPLATE = Template("""    jclass requestClass = (*env)->FindClass(env, "io/fd/jvpp/${plugin_name}/dto/${java_dto_name}");
 """)
 
 

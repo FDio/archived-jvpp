@@ -32,19 +32,19 @@
 
 #include <jvpp-common/jvpp_common.h>
 
-#include "jvpp-gtpu/io_fd_vpp_jvpp_gtpu_JVppGtpuImpl.h"
+#include "jvpp-gtpu/io_fd_jvpp_gtpu_JVppGtpuImpl.h"
 #include "jvpp_gtpu.h"
 #include "jvpp-gtpu/jvpp_gtpu_gen.h"
 
 /*
- * Class:     io_fd_vpp_jvpp_gtpu_JVppgtpuImpl
+ * Class:     io_fd_jvpp_gtpu_JVppgtpuImpl
  * Method:    init0
  * Signature: (JI)V
  */
-JNIEXPORT void JNICALL Java_io_fd_vpp_jvpp_gtpu_JVppGtpuImpl_init0
+JNIEXPORT void JNICALL Java_io_fd_jvpp_gtpu_JVppGtpuImpl_init0
   (JNIEnv *env, jclass clazz, jobject callback, jlong queue_address, jint my_client_index) {
   gtpu_main_t * plugin_main = &gtpu_main;
-  clib_warning ("Java_io_fd_vpp_jvpp_gtpu_JVppGtpuImpl_init0");
+  clib_warning ("Java_io_fd_jvpp_gtpu_JVppGtpuImpl_init0");
 
   plugin_main->my_client_index = my_client_index;
   plugin_main->vl_input_queue = (svm_queue_t *)queue_address;
@@ -69,7 +69,7 @@ JNIEXPORT void JNICALL Java_io_fd_vpp_jvpp_gtpu_JVppGtpuImpl_init0
   #undef _
 }
 
-JNIEXPORT void JNICALL Java_io_fd_vpp_jvpp_gtpu_JVppGtpuImpl_close0
+JNIEXPORT void JNICALL Java_io_fd_jvpp_gtpu_JVppGtpuImpl_close0
 (JNIEnv *env, jclass clazz) {
   gtpu_main_t * plugin_main = &gtpu_main;
 

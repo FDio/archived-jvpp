@@ -22,8 +22,8 @@
 
 #include <jni.h>
 #include <jvpp-common/jvpp_common.h>
-#include "io_fd_vpp_jvpp_VppJNIConnection.h"
-#include "io_fd_vpp_jvpp_JVppRegistryImpl.h"
+#include "io_fd_jvpp_VppJNIConnection.h"
+#include "io_fd_jvpp_JVppRegistryImpl.h"
 
 #include <vpp/api/vpe_msg_enum.h>
 #define vl_typedefs             /* define message structures */
@@ -145,7 +145,7 @@ static void vl_api_control_ping_reply_t_handler(
                     rm->controlPingReplyClass, "<init>", "()V");
             jmethodID callbackMethod = (*env)->GetMethodID(env,
                     rm->registryClass, "onControlPingReply",
-                    "(Lio/fd/vpp/jvpp/dto/ControlPingReply;)V");
+                    "(Lio/fd/jvpp/dto/ControlPingReply;)V");
 
             jobject dto = (*env)->NewObject(env, rm->controlPingReplyClass,
                     constructor);
@@ -276,7 +276,7 @@ static int connect_to_vpe(char *shm_prefix, char *name) {
     return send_initial_control_ping();
 }
 
-JNIEXPORT jobject JNICALL Java_io_fd_vpp_jvpp_VppJNIConnection_clientConnect(
+JNIEXPORT jobject JNICALL Java_io_fd_jvpp_VppJNIConnection_clientConnect(
         JNIEnv *env, jclass obj, jstring shmPrefix, jstring clientName) {
     /*
      * TODO introducing memory prefix as variable can be used in hc2vpp
@@ -291,7 +291,7 @@ JNIEXPORT jobject JNICALL Java_io_fd_vpp_jvpp_VppJNIConnection_clientConnect(
     jvpp_registry_main_t * rm = &jvpp_registry_main;
 
     jclass connectionInfoClass = (*env)->FindClass(env,
-            "io/fd/vpp/jvpp/VppJNIConnection$ConnectionInfo");
+            "io/fd/jvpp/VppJNIConnection$ConnectionInfo");
     jmethodID connectionInfoConstructor = (*env)->GetMethodID(env,
             connectionInfoClass, "<init>", "(JIII)V");
 
@@ -327,7 +327,7 @@ JNIEXPORT jobject JNICALL Java_io_fd_vpp_jvpp_VppJNIConnection_clientConnect(
             (jint) jm->my_client_index, (jint) rv, (jint) rm->vpe_pid);
 }
 
-JNIEXPORT jint JNICALL Java_io_fd_vpp_jvpp_JVppRegistryImpl_controlPing0(
+JNIEXPORT jint JNICALL Java_io_fd_jvpp_JVppRegistryImpl_controlPing0(
         JNIEnv *env, jobject regstryObject) {
     jvpp_main_t * jm = &jvpp_main;
     vl_api_control_ping_t * mp;
@@ -353,7 +353,7 @@ JNIEXPORT jint JNICALL Java_io_fd_vpp_jvpp_JVppRegistryImpl_controlPing0(
     return my_context_id;
 }
 
-JNIEXPORT void JNICALL Java_io_fd_vpp_jvpp_VppJNIConnection_clientDisconnect(
+JNIEXPORT void JNICALL Java_io_fd_jvpp_VppJNIConnection_clientDisconnect(
         JNIEnv *env, jclass clazz) {
     jvpp_registry_main_t * rm = &jvpp_registry_main;
     rm->is_connected = 0; // TODO make thread safe
@@ -380,7 +380,7 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     }
 
     rm->controlPingReplyClass = (jclass) (*env)->NewGlobalRef(env,
-            (*env)->FindClass(env, "io/fd/vpp/jvpp/dto/ControlPingReply"));
+            (*env)->FindClass(env, "io/fd/jvpp/dto/ControlPingReply"));
     if ((*env)->ExceptionCheck(env)) {
         (*env)->ExceptionDescribe(env);
         clib_warning("Failed to cache class references\n");
@@ -388,7 +388,7 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     }
 
     rm->callbackExceptionClass = (jclass) (*env)->NewGlobalRef(env,
-            (*env)->FindClass(env, "io/fd/vpp/jvpp/VppCallbackException"));
+            (*env)->FindClass(env, "io/fd/jvpp/VppCallbackException"));
     if ((*env)->ExceptionCheck(env)) {
         (*env)->ExceptionDescribe(env);
         return JNI_ERR;

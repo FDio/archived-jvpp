@@ -35,7 +35,7 @@ set(JVPP_LIBS jvpp_common ${VPPINFRA_DIR} ${VLIBMEMORYCLIENT_DIR} ${SVM_DIR}
         Threads::Threads m rt)
 
 ############# Registry package ##################
-set(PACKAGE_DIR_JVPP_REGISTRY io/fd/vpp/jvpp)
+set(PACKAGE_DIR_JVPP_REGISTRY io/fd/jvpp)
 unset(files)
 FILE(GLOB files RELATIVE
         ${CMAKE_CURRENT_SOURCE_DIR}
@@ -67,7 +67,7 @@ add_custom_command(TARGET jvpp-registry
         ${CMAKE_CURRENT_BINARY_DIR}/jvpp-registry-${JAPI_LIB_VERSION}.jar
         -C jvpp-registry/target .
         COMMAND rm ARGS -rf jvpp-registry/target
-        jvpp-registry/io_fd_vpp_jvpp_*.h
+        jvpp-registry/io_fd_jvpp_*.h
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "JAR_GEN registry"
         )
@@ -106,8 +106,8 @@ function(jargen name)
             ${CMAKE_CURRENT_BINARY_DIR}/jvpp-${name}-${JAPI_LIB_VERSION}.jar
             -C jvpp-${name}/target .
             COMMAND rm ARGS -rf jvpp-${name}/target jvpp-${name}/jvpp-${name}.files
-            jvpp-${name}/jvpp_${name}_gen.h jvpp-${name}/io_fd_vpp_jvpp_*.h
-            jvpp-registry/io_fd_vpp_jvpp_*.h
+            jvpp-${name}/jvpp_${name}_gen.h jvpp-${name}/io_fd_jvpp_*.h
+            jvpp-registry/io_fd_jvpp_*.h
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
             COMMENT "JAR_GEN ${name}"
             )

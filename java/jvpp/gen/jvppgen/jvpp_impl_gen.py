@@ -62,9 +62,9 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import io.fd.vpp.jvpp.callback.JVppCallback;
-import io.fd.vpp.jvpp.VppConnection;
-import io.fd.vpp.jvpp.JVppRegistry;
+import io.fd.jvpp.callback.JVppCallback;
+import io.fd.jvpp.VppConnection;
+import io.fd.jvpp.JVppRegistry;
 
 /**
  * <p>Default implementation of JVpp interface.
@@ -133,12 +133,12 @@ public final class JVpp${plugin_name}Impl implements $plugin_package.JVpp${plugi
     }
 
     @Override
-    public int send(io.fd.vpp.jvpp.dto.JVppRequest request) throws io.fd.vpp.jvpp.VppInvocationException {
+    public int send(io.fd.jvpp.dto.JVppRequest request) throws io.fd.jvpp.VppInvocationException {
         return request.send(this);
     }
 
     @Override
-    public final int controlPing(final io.fd.vpp.jvpp.dto.ControlPing controlPing) throws io.fd.vpp.jvpp.VppInvocationException {
+    public final int controlPing(final io.fd.jvpp.dto.ControlPing controlPing) throws io.fd.jvpp.VppInvocationException {
         return registry.controlPing(JVpp${plugin_name}Impl.class);
     }
 $methods
@@ -147,7 +147,7 @@ $methods
 
 _JVPP_IMPL_METHOD_TEMPLATE = Template("""
     private static native int ${name}0($plugin_package.dto.$type request);
-    public final int $name($plugin_package.dto.$type request) throws io.fd.vpp.jvpp.VppInvocationException {
+    public final int $name($plugin_package.dto.$type request) throws io.fd.jvpp.VppInvocationException {
         java.util.Objects.requireNonNull(request, "Null request object");
         connection.checkActive();
         if (LOG.isLoggable(Level.FINE)) {
@@ -155,19 +155,19 @@ _JVPP_IMPL_METHOD_TEMPLATE = Template("""
         }
         int result=${name}0(request);
         if (result<0){
-            throw new io.fd.vpp.jvpp.VppInvocationException("${name}", result);
+            throw new io.fd.jvpp.VppInvocationException("${name}", result);
         }
         return result;
     }""")
 
 _JVPP_IMPL_NO_ARG_METHOD_TEMPLATE = Template("""
-    private static native int ${name}0() throws io.fd.vpp.jvpp.VppInvocationException;
-    public final int $name() throws io.fd.vpp.jvpp.VppInvocationException {
+    private static native int ${name}0() throws io.fd.jvpp.VppInvocationException;
+    public final int $name() throws io.fd.jvpp.VppInvocationException {
         connection.checkActive();
         LOG.fine("Sending $type event message");
         int result=${name}0();
         if(result<0){
-            throw new io.fd.vpp.jvpp.VppInvocationException("${name}", result);
+            throw new io.fd.jvpp.VppInvocationException("${name}", result);
         }
         return result;
     }""")
