@@ -35,15 +35,12 @@ echo "Maven artifacts version:" ${VERSION}
 
 cd "$dir/../java/"
 
-echo "Installing jars to Maven:"
-mvn install:install-file -Dfile=jvpp-registry-${MAIN_VER}.jar -DgroupId=io.fd.vpp     -DartifactId=jvpp-registry -Dversion=${VERSION} -Dpackaging=jar
-mvn install:install-file -Dfile=jvpp-core-${MAIN_VER}.jar -DgroupId=io.fd.vpp     -DartifactId=jvpp-core -Dversion=${VERSION} -Dpackaging=jar
-mvn install:install-file -Dfile=jvpp-ioampot-${MAIN_VER}.jar -DgroupId=io.fd.vpp     -DartifactId=jvpp-ioampot -Dversion=${VERSION} -Dpackaging=jar
-mvn install:install-file -Dfile=jvpp-ioamtrace-${MAIN_VER}.jar -DgroupId=io.fd.vpp     -DartifactId=jvpp-ioamtrace -Dversion=${VERSION} -Dpackaging=jar
-mvn install:install-file -Dfile=jvpp-ioamexport-${MAIN_VER}.jar -DgroupId=io.fd.vpp     -DartifactId=jvpp-ioamexport -Dversion=${VERSION} -Dpackaging=jar
-mvn install:install-file -Dfile=jvpp-nat-${MAIN_VER}.jar -DgroupId=io.fd.vpp     -DartifactId=jvpp-nat -Dversion=${VERSION} -Dpackaging=jar
-mvn install:install-file -Dfile=jvpp-nsh-${MAIN_VER}.jar -DgroupId=io.fd.vpp     -DartifactId=jvpp-nsh -Dversion=${VERSION} -Dpackaging=jar
-mvn install:install-file -Dfile=jvpp-acl-${MAIN_VER}.jar -DgroupId=io.fd.vpp     -DartifactId=jvpp-acl -Dversion=${VERSION} -Dpackaging=jar
-mvn install:install-file -Dfile=jvpp-ikev2-${MAIN_VER}.jar -DgroupId=io.fd.vpp     -DartifactId=jvpp-ikev2 -Dversion=${VERSION} -Dpackaging=jar
+JARS=`find . -name "jvpp*.jar" | sed -e "s/.\///" -e "s/-.[0-9].*.jar//"`
+
+for JAR in ${JARS}
+do
+    echo "Installing ${JAR} to local maven."
+    mvn install:install-file -Dfile=${JAR}-${MAIN_VER}.jar -DgroupId=io.fd.jvpp -DartifactId=${JAR} -Dversion=${VERSION} -Dpackaging=jar
+done
 
 echo "all done."
