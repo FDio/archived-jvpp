@@ -1,0 +1,4 @@
+/_build/*
+/_doctrees/*
+/Makefile
+/cmake_install.cmake

@@ -16,7 +16,8 @@ cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(jvpp)
 
 include(CheckCCompilerFlag)
-
+# Add custom modules
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/modules")
 #
 # Convert to camel case string from lower case underscored string.
 #
@@ -147,7 +148,7 @@ else()
 endif()
 
 add_subdirectory(java)
-
+add_subdirectory(docs)
 # enable Tests
 include(FindPythonInterp)
 if(PYTHONINTERP_FOUND)

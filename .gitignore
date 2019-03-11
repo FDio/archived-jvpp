@@ -1,6 +1,7 @@
 .idea
 /build-root/lib
 /build-root/packages
+/build-root/html/
 /build-root/.deps.ok
 /target
 **/core
@@ -12,6 +13,10 @@ _CPack_Packages/
 CMakeFiles/
 CMakeCache.txt
 install_manifest.txt
-*.cmake
+/CPackConfig.cmake
+/CPackSourceConfig.cmake
 *.cbp
 *.pyc
+
+/cmake_install.cmake
+/CTestTestfile.cmake

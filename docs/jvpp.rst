@@ -27,7 +27,7 @@ https://github.com/FDio/jvpp.git
 
 
 Install dependencies (Optional, one time only)
-------------------
+----------------------------------------------
 
 You can install all dependencies using provided install-dep target:
 
