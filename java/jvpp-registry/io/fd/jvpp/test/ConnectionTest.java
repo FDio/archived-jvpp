@@ -30,9 +30,7 @@ public class ConnectionTest {
         final JVppRegistry registry = new JVppRegistryImpl("ConnectionTest");
         try {
             System.out.println("Successfully connected to vpp");
-            Thread.sleep(5000);
             System.out.println("Disconnecting...");
-            Thread.sleep(1000);
         } finally {
             registry.close();
         }

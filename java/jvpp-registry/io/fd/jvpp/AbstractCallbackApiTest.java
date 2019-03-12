@@ -44,17 +44,14 @@ public abstract class AbstractCallbackApiTest {
 
             });
             System.out.println("Successfully connected to VPP");
-            Thread.sleep(1000);
 
             System.out.println("Sending control ping using JVppRegistry");
             registry.controlPing(jvpp.getClass());
 
-            Thread.sleep(2000);
-
             System.out.println("Sending control ping using JVpp plugin");
             jvpp.send(new ControlPing());
 
-            Thread.sleep(2000);
+            Thread.sleep(100);
             System.out.println("Disconnecting...");
             Assertions.assertEquals(2, receivedPingCount);
             Assertions.assertEquals(0, errorPingCount);
