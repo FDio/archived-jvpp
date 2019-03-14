@@ -186,9 +186,9 @@ $json_definition
 static inline jobject _net_to_host_${c_name}(JNIEnv * env, vl_api_${c_name}_t _net)
 {
     jclass enumClass = (*env)->FindClass(env, "${class_FQN}");
-    jmethodID enumInit = (*env)->GetMethodID(env, enumClass, "setOptionsValue", "(I)V");
+    jmethodID constructor = (*env)->GetMethodID(env, enumClass, "<init>", "(I)V");
     ${jni_type} value = (${jni_type}) $type_swap
-    return (*env)->NewObject(env, enumClass, enumInit, value);
+    return (*env)->NewObject(env, enumClass, constructor, value);
 }""")
 
 

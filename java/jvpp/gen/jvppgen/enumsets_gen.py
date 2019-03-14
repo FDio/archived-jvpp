@@ -53,7 +53,17 @@ $json_definition
  */
 public final class $java_name {
 
-    private final EnumSet<$java_enum_name> options = EnumSet.noneOf($java_enum_name.class);
+    private final EnumSet<$java_enum_name> options;
+
+    public $java_name() {
+        options = EnumSet.noneOf($java_enum_name.class);
+        setOptionsValue(0);
+    }
+
+    public $java_name($value_type value) {
+        options = EnumSet.noneOf($java_enum_name.class);
+        setOptionsValue(value);
+    }
 
     @Override
     public boolean equals(final Object obj) {
@@ -92,19 +102,35 @@ public final class $java_name {
     }
 
     public boolean add($java_enum_name option) {
+        if (option.value == 0) return false;
+
+        if (getOptionsValue() == 0) {
+            options.clear();
+        }
         return options.add(option);
     }
 
     public boolean remove($java_enum_name option) {
-        return options.remove(option);
+        if (option.value == 0) return false;
+
+        options.remove(option);
+        if (options.isEmpty()) {
+            clear();
+        }
+        return true;
     }
 
-    public boolean removeAll(EnumSet<$java_enum_name> options) {
-        return options.removeAll(options);
+    public boolean removeAll(EnumSet<$java_enum_name> optionsToRemove) {
+        boolean retVal = options.removeAll(optionsToRemove);
+        if (options.isEmpty()) {
+            clear();
+            retVal = true;
+        }
+        return retVal;
     }
 
     public void clear() {
-        options.clear();
+        setOptionsValue(0);
     }
 
     public boolean contains($java_enum_name option) {
@@ -135,7 +161,7 @@ $constants;
                     return enumeration;
                 }
             }
-            return null;
+            return $java_enum_name.values()[0];
         }
     }
 }
