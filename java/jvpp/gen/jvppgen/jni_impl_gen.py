@@ -16,7 +16,7 @@
 from string import Template
 
 from jni_common_gen import generate_j2c_identifiers, generate_j2c_swap
-from jvpp_model import is_dump, is_request, is_control_ping, is_control_ping_reply
+from jvpp_model import is_dump, is_request, is_control_ping, is_control_ping_reply, _underscore_to_camelcase_lower
 
 
 def generate_jni_impl(model):
@@ -112,5 +112,5 @@ def _generate_msg_size(msg):
             # FIXME(VPP-586): for proper nested structures support, we need generate functions computing type sizes
             # and use it instead of sizeof
         if field.type.name == "string":
-            _size_components += " + 1 + jstr_length(env, %s) * sizeof(u8)" % field.name
+            _size_components += " + 1 + jstr_length(env, %s) * sizeof(u8)" % _underscore_to_camelcase_lower(field.name)
     return msg_size + "".join(_size_components)
