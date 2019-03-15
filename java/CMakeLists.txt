@@ -144,6 +144,7 @@ elseif (${RELEASE_ID} IN_LIST RHBasedOS)
             COMMAND grep -v acl
             COMMAND grep -v avf
             COMMAND grep -v cdp
+            COMMAND grep -v ct6
             COMMAND grep -v dpdk
             COMMAND grep -v flowprobe
             COMMAND grep -v gbp
