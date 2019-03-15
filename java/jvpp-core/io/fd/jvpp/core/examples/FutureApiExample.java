@@ -90,19 +90,19 @@ public class FutureApiExample {
     private static void testSwInterfaceDump(final FutureJVppCoreFacade jvpp) throws Exception {
         LOG.info("Sending SwInterfaceDump request...");
         final SwInterfaceDump request = new SwInterfaceDump();
-        request.nameFilterValid = 0;
-        request.nameFilter = "".getBytes(StandardCharsets.UTF_8);
+        request.nameFilterValid = false;
+        request.nameFilter = "";
 
         final Future<SwInterfaceDetailsReplyDump> replyFuture = jvpp.swInterfaceDump(request).toCompletableFuture();
         final SwInterfaceDetailsReplyDump reply = replyFuture.get();
         for (SwInterfaceDetails details : reply.swInterfaceDetails) {
             Objects.requireNonNull(details, "reply.swInterfaceDetails contains null element!");
             LOG.info(
-                String.format("Received SwInterfaceDetails: interfaceName=%s, l2AddressLength=%d, adminUpDown=%d, "
-                        + "linkUpDown=%d, linkSpeed=%d, linkMtu=%d%n",
+                String.format("Received SwInterfaceDetails: interfaceName=%s, l2AddressLength=%d, flags=%s, "
+                        + "linkSpeed=%d, linkMtu=%d%n",
                     details.interfaceName,
-                    details.l2AddressLength, details.adminUpDown,
-                    details.linkUpDown, details.linkSpeed, (int) details.linkMtu));
+                    details.l2Address.macaddress.length, details.flags.getOptions(),
+                    details.linkSpeed, (int) details.linkMtu));
         }
     }
 
