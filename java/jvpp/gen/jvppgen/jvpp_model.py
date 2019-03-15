@@ -456,6 +456,7 @@ class JVppModel(object):
         # It is the API user responsibility to interpret them correctly.
 
         self._types_by_name = OrderedDict({
+            'bool': SimpleType('bool', 'boolean', 'Z', 'jboolean', 'Boolean'),
             'u8': SimpleType('u8', 'byte', 'B', 'jbyte', 'Byte'),
             'i8': SimpleType('i8', 'byte', 'B', 'jbyte', 'Byte'),
             'u16': SimpleType('u16', 'short', 'S', 'jshort', 'Short',
