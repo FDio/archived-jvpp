@@ -19,6 +19,7 @@ rm -rf build-root/packages/*
 rm -rf build-root/html/*
 rm -rf docs/_build/*
 rm -rf docs/_doctrees/*
+rm -rf Testing
 rm -rf java/*.jar
 # clean cmake cache
 find . -iwholename '*cmake*' \
