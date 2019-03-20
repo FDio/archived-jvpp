@@ -26,10 +26,9 @@ import io.fd.jvpp.core.dto.CreateSubifReply;
 import io.fd.jvpp.core.dto.SwInterfaceDetailsReplyDump;
 import io.fd.jvpp.core.dto.SwInterfaceDump;
 import io.fd.jvpp.core.future.FutureJVppCoreFacade;
-import io.fd.jvpp.core.types.InterfaceIndex;
-import io.fd.jvpp.core.types.SubIfFlags;
+import java.nio.charset.StandardCharsets;
 
-/**jvpp-core/io/fd/jvpp/core/examples/CreateSubInterfaceExample.java
+/**
  * <p>Tests sub-interface creation.<br> Equivalent to:<br>
  *
  * <pre>{@code
@@ -47,8 +46,8 @@ public class CreateSubInterfaceExample {
 
     private static SwInterfaceDump createSwInterfaceDumpRequest(final String ifaceName) {
         SwInterfaceDump request = new SwInterfaceDump();
-        request.nameFilter = ifaceName;
-        request.nameFilterValid = true;
+        request.nameFilter = ifaceName.getBytes(StandardCharsets.UTF_8);
+        request.nameFilterValid = 1;
         return request;
     }
 
@@ -60,14 +59,18 @@ public class CreateSubInterfaceExample {
         }
     }
 
-    private static CreateSubif createSubifRequest(final InterfaceIndex swIfIndex, final int subId) {
+    private static CreateSubif createSubifRequest(final int swIfIndex, final int subId) {
         CreateSubif request = new CreateSubif();
         request.swIfIndex = swIfIndex; // super interface id
         request.subId = subId;
-        request.subIfFlags = new SubIfFlags();
-        request.subIfFlags.add(SubIfFlags.SubIfFlagsOptions.SUB_IF_API_FLAG_TWO_TAGS);
-        request.subIfFlags.add(SubIfFlags.SubIfFlagsOptions.SUB_IF_API_FLAG_EXACT_MATCH);
-        request.subIfFlags.add(SubIfFlags.SubIfFlagsOptions.SUB_IF_API_FLAG_INNER_VLAN_ID_ANY);
+        request.noTags = 0;
+        request.oneTag = 0;
+        request.twoTags = 1;
+        request.dot1Ad = 0;
+        request.exactMatch = 1;
+        request.defaultSub = 0;
+        request.outerVlanIdAny = 0;
+        request.innerVlanIdAny = 1;
         request.outerVlanId = 100;
         request.innerVlanId = 0;
         return request;
@@ -93,7 +96,7 @@ public class CreateSubInterfaceExample {
             requireNonNull(swInterfaceDetails.swInterfaceDetails, "swInterfaceDetails is null");
             requireSingleIface(swInterfaceDetails, ifaceName);
 
-            final InterfaceIndex swIfIndex = swInterfaceDetails.swInterfaceDetails.get(0).swIfIndex;
+            final int swIfIndex = swInterfaceDetails.swInterfaceDetails.get(0).swIfIndex;
             final int subId = 1;
 
             final CreateSubifReply createSubifReply =

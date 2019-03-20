@@ -55,8 +55,8 @@ public class CallbackApiExample {
 
             System.out.println("Sending SwInterfaceDump request...");
             SwInterfaceDump swInterfaceDumpRequest = new SwInterfaceDump();
-            swInterfaceDumpRequest.nameFilterValid = false;
-            swInterfaceDumpRequest.nameFilter = "";
+            swInterfaceDumpRequest.nameFilterValid = 0;
+            swInterfaceDumpRequest.nameFilter = "".getBytes(StandardCharsets.UTF_8);
             jvpp.send(swInterfaceDumpRequest);
 
             Thread.sleep(1000);
@@ -85,10 +85,10 @@ public class CallbackApiExample {
 
         @Override
         public void onSwInterfaceDetails(final SwInterfaceDetails msg) {
-            System.out.printf("Received SwInterfaceDetails: interfaceName=%s, l2AddressLength=%d, flags=%s, "
-                    + "linkSpeed=%d, linkMtu=%d%n",
-                msg.interfaceName, msg.l2Address.macaddress.length, msg.flags.getOptions(),
-                msg.linkSpeed, (int) msg.linkMtu);
+            System.out.printf("Received SwInterfaceDetails: interfaceName=%s, l2AddressLength=%d, adminUpDown=%d, "
+                    + "linkUpDown=%d, linkSpeed=%d, linkMtu=%d%n",
+                msg.interfaceName, msg.l2AddressLength, msg.adminUpDown,
+                msg.linkUpDown, msg.linkSpeed, (int) msg.linkMtu);
         }
 
         @Override

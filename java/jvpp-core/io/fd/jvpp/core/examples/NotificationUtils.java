@@ -16,9 +16,7 @@
 
 package io.fd.jvpp.core.examples;
 
-import io.fd.jvpp.core.types.InterfaceIndex;
 import java.io.PrintStream;
-import io.fd.jvpp.core.types.IfStatusFlags;
 import io.fd.jvpp.core.dto.SwInterfaceSetFlags;
 import io.fd.jvpp.core.dto.SwInterfaceEvent;
 import io.fd.jvpp.core.dto.WantInterfaceEvents;
@@ -33,10 +31,8 @@ final class NotificationUtils {
 
     static SwInterfaceSetFlags getChangeInterfaceState() {
         final SwInterfaceSetFlags swInterfaceSetFlags = new SwInterfaceSetFlags();
-        swInterfaceSetFlags.flags = new IfStatusFlags();
-        swInterfaceSetFlags.flags.add(IfStatusFlags.IfStatusFlagsOptions.IF_STATUS_API_FLAG_ADMIN_UP);
-        swInterfaceSetFlags.swIfIndex = new InterfaceIndex();
-        swInterfaceSetFlags.swIfIndex.interfaceindex = 0;
+        swInterfaceSetFlags.swIfIndex = 0;
+        swInterfaceSetFlags.adminUpDown = 1;
         return swInterfaceSetFlags;
     }
 
