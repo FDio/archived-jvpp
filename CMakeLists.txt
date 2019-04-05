@@ -14,51 +14,33 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(jvpp)
-
-include(CheckCCompilerFlag)
 # Add custom modules
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/modules")
-#
-# Convert to camel case string from lower case underscored string.
-#
-# :param input: the input lowercase underscored string
-# :type input: string
-# :param output: the output camelcase string
-# :type output: string
-#
-function(camel_case_string input output)
-    string(REPLACE "_" ";" list ${input})
-    foreach(SUBSTR ${list})
-        string(SUBSTRING ${SUBSTR} 0 1 FIRST_LETTER)
-        string(TOUPPER ${FIRST_LETTER} FIRST_LETTER)
-        string(REGEX REPLACE "^.(.*)" "${FIRST_LETTER}\\1" SUBSTR "${SUBSTR}")
-        string(APPEND result ${SUBSTR})
-    endforeach(SUBSTR)
-    set(${output} "${result}" PARENT_SCOPE)
-endfunction()
-
-if (CMAKE_SYSTEM_PROCESSOR MATCHES "amd64.*|x86_64.*|AMD64.*")
-    set(CMAKE_C_FLAGS "-march=corei7 -mtune=corei7-avx ${CMAKE_C_FLAGS}")
-elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64.*|AARCH64.*)")
-    set(CMAKE_C_FLAGS "-march=armv8-a+crc ${CMAKE_C_FLAGS}")
-endif ()
-
-check_c_compiler_flag("-Wno-address-of-packed-member" compiler_flag_no_address_of_packed_member)
-if (compiler_flag_no_address_of_packed_member)
-    add_definitions(-Wno-address-of-packed-member)
-endif ()
+include(CheckCCompilerFlag)
+include(modules/misc.cmake)
+include(modules/cpu.cmake)
+include(modules/ccache.cmake)
 
 find_package(Threads REQUIRED)
+
+# OPTIONS
+message(INFO "\nSystem:")
+info("Architecture" ${CMAKE_SYSTEM_PROCESSOR})
+info("C Compiler" ${CMAKE_C_COMPILER})
+info("C Flags" ${CMAKE_C_FLAGS})
+info("C++ Compiler" ${CMAKE_CXX_COMPILER})
+info("C++ Flags" "${CMAKE_CXX_FLAGS}")
 
 # OPTIONS
 option(PackZip "Create ZIP package (default: fasle)" false)
 option(PackTgz "Create Tgz package (default: fasle)" false)
 
-message("\nOptions:")
-message("    PackZip: ${PackZip}")
-message("    PackTgz: ${PackTgz}")
+message(INFO "\nOptions:")
+info("JVPP_USE_CCACHE" ${JVPP_USE_CCACHE})
+info("PackZip" ${PackZip})
+info("PackTgz" ${PackTgz})
 
-message("\nEnvironment Variables:")
+message(INFO "\nEnvironment Variables:")
 
 # JVPP RELATED VARIABLES
 unset(JVPP_VERSION)
@@ -72,27 +54,11 @@ execute_process(
 string(REPLACE "-" ";" JAPI_LIB_VERSION ${JVPP_VERSION})
 list(GET JAPI_LIB_VERSION 0 JAPI_LIB_VERSION)
 
-message("    JVPP Main Version: ${JVPP_VERSION}")
-message("    JVPP Version: ${JAPI_LIB_VERSION}")
+info("JVPP Main Version" ${JVPP_VERSION})
+info("JVPP Version" ${JAPI_LIB_VERSION})
 
-# OS RELATED VARIABLES
-list(APPEND DebianBasedOS "Ubuntu" "LinuxMint")
-list(APPEND RHBasedOS "CentOS")
-unset(RELEASE_ID)
-unset(RELEASE_CODENAME)
-find_program(LSB_RELEASE_EXEC lsb_release)
-execute_process(COMMAND ${LSB_RELEASE_EXEC} -is
-        OUTPUT_VARIABLE RELEASE_ID
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-
-execute_process(COMMAND ${LSB_RELEASE_EXEC} -cs
-        OUTPUT_VARIABLE RELEASE_CODENAME
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-
-message("    OS Release Id: ${RELEASE_ID} ")
-message("    OS Release Codename: ${RELEASE_CODENAME} ")
+info("OS Release Id" ${RELEASE_ID})
+info("OS Release Codename" ${RELEASE_CODENAME})
 
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build-root/lib)
@@ -122,22 +88,22 @@ else()
   set(ENV{JAVA_HOME} "${JAVA_HOME_SET}")
 endif()
 
-message("\nJAVA:")
-message("    Java home: $ENV{JAVA_HOME}")
+message(INFO "\nJAVA:")
 find_package(Java 1.8 REQUIRED COMPONENTS Development)
 get_filename_component(jvm_path ${Java_JAVAC_EXECUTABLE} DIRECTORY)
 set(Java_INCLUDE_DIRS ${jvm_path}/../include ${jvm_path}/../include/linux)
-message("    Java: ${Java_JAVA_EXECUTABLE}")
-message("    Java version: ${Java_VERSION_STRING}")
-message("    Java headers: ${Java_INCLUDE_DIRS}")
-message("    Javac: ${Java_JAVAC_EXECUTABLE}")
+info("Java home" $ENV{JAVA_HOME})
+info("Java" ${Java_JAVA_EXECUTABLE})
+info("Java version" ${Java_VERSION_STRING})
+info("Java headers" ${Java_INCLUDE_DIRS})
+info("Javac" ${Java_JAVAC_EXECUTABLE})
 
-execute_process(COMMAND ./scripts/verify-installed vpp* OUTPUT_VARIABLE VPP_INSTALLED)
-string(STRIP "${VPP_INSTALLED}" VPP_INSTALLED)
+execute_process(COMMAND ./scripts/verify-installed vpp-* OUTPUT_VARIABLE VPP_INSTALLED)
+#string(STRIP "${VPP_INSTALLED}" VPP_INSTALLED)
 
-if (${VPP_INSTALLED} MATCHES "vpp-dev")
-  message("\nVPP instalation found.")
-  message("Packages: \n${VPP_INSTALLED}")
+if ("${VPP_INSTALLED}" MATCHES "vpp-dev")
+  message(INFO "\nVPP instalation found:")
+  info("Packages" "${VPP_INSTALLED}")
 else()
   if (${RELEASE_ID} IN_LIST DebianBasedOS)
     set(REQUIREMENTS "vpp, vpp-dev, libvppinfra, vpp-plugin-core")
@@ -161,11 +127,13 @@ if(PYTHONINTERP_FOUND)
 
     separate_arguments(TEST_LIST UNIX_COMMAND ${STR_TESTS})
 
-    message(\nJVPP tests:)
+    message(INFO "\nJVPP tests:")
+       set(TEST_ID 0)
     foreach(JVPPTEST ${TEST_LIST})
+        MATH(EXPR TEST_ID "${TEST_ID}+1")
         string(REPLACE "test_jvpp.TestJVpp." "" JVPPTESTNAME ${JVPPTEST})
         camel_case_string(${JVPPTESTNAME} JVPPTESTNAME)
-        message("    ${JVPPTESTNAME}")
+        info("${TEST_ID}." "${JVPPTESTNAME}")
         set(CTEST_OUTPUT_ON_FAILURE=1)
         set(ENV{V} "2")
         add_test(NAME ${JVPPTESTNAME}
@@ -175,4 +143,4 @@ if(PYTHONINTERP_FOUND)
 else()
     message(WARNING "Python interpreter not found. Tests are disabled.")
 endif()
-message(\nConfiguration results:)
+message(INFO \nConfiguration results:)

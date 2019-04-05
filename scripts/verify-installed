@@ -17,9 +17,9 @@ package=$1
 source /etc/os-release
 
 if [[ "$ID" = "centos" ]]; then
-  yum list installed | grep ${package}
+  yum list installed | grep ${package} | sed -n ':a;N;${s/\n/;/g;p};ba'
   exit
 else
-  dpkg -l ${package} |grep ii | grep ${package}
+  dpkg -l ${package} |grep ii | grep ${package} | sed -n ':a;N;${s/\n/;/g;p};ba'
 fi
 

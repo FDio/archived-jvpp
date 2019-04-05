@@ -21,7 +21,12 @@ rm -rf docs/_build/*
 rm -rf docs/_doctrees/*
 rm -rf java/*.jar
 # clean cmake cache
-find . -iwholename '*cmake*' -not -name CMakeLists.txt -not -name FindSphinx.cmake -delete
+find . -iwholename '*cmake*' \
+    -not -name CMakeLists.txt \
+    -not -name FindSphinx.cmake \
+    -not -name ccache.cmake \
+    -not -name cpu.cmake \
+    -not -name misc.cmake -delete
 # clean cpack cache
 find . -iwholename '*cpack*' -delete
 echo "... cleanup finished."

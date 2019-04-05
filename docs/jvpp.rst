@@ -52,6 +52,13 @@ from JVPP's root directory:
 
   cmake .
 
+For CentOS7 enable devtoolset7
+
+.. code-block:: console
+
+  /opt/rh/devtoolset-7/enable
+  cmake3 . -DCMAKE_PROGRAM_PATH:PATH="/opt/rh/devtoolset-7/root/bin"
+
 This will configure all variables and setup the build.
 If needed there are several optional parameters that can be set. You can list all configuration parameters using:
 
