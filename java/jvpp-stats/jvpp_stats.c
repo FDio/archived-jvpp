@@ -47,15 +47,8 @@ void set_field(int_stats_t* stats, int index, const char* field_name, int packet
 stat_segment_data_t* get_statistics_dump() {
     u8 **patterns = 0;
     u32 *dir;
-    u8 * stat_segment_name = (u8 *) STAT_SEGMENT_SOCKET_FILE;
     vec_add1(patterns, (u8*)"/if/rx");
     vec_add1(patterns, (u8*)"/if/tx");
-    int rv = stat_segment_connect((char*)stat_segment_name);
-    if (rv < 0) {
-        fprintf(stderr, "Couldn't connect to %s. Check if socket exists/permissions.(ret stat: %d)\n",
-                stat_segment_name, rv);
-        return NULL;
-    }
     dir = stat_segment_ls(patterns);
     return stat_segment_dump(dir);
 }
@@ -124,4 +117,20 @@ JNIEXPORT jobjectArray JNICALL Java_io_fd_jvpp_stats_JVppClientStatsImpl_interfa
         (*env)->SetObjectArrayElement(env,retArray,i,newClientObj);
     }
     return retArray;
+}
+
+JNIEXPORT jint JNICALL Java_io_fd_jvpp_stats_JVppClientStatsImpl_statSegmentConnect(JNIEnv *env, jclass jclazz) {
+    u8 * stat_segment_name = (u8 *) STAT_SEGMENT_SOCKET_FILE;
+    int rv = stat_segment_connect((char*)stat_segment_name);
+    if (rv < 0) {
+        fprintf(stderr, "Couldn't connect to %s. Check if socket exists/permissions.(ret stat: %d)\n",
+                stat_segment_name, rv);
+        return -1;
+    }
+    return 0;
+}
+
+JNIEXPORT void JNICALL Java_io_fd_jvpp_stats_JVppClientStatsImpl_statSegmentDisconnect(JNIEnv *env, jclass jclazz) {
+    stat_segment_disconnect();
+    return;
 }

@@ -18,26 +18,27 @@ package io.fd.jvpp.stats.test;
 
 import io.fd.jvpp.stats.JVppClientStatsImpl;
 import io.fd.jvpp.stats.dto.InterfaceStatistics;
+import java.util.List;
 
 class JvppStatsApiTest {
 
     public static void main(String[] args) {
 
         JVppClientStatsImpl myImpl = new JVppClientStatsImpl();
-        InterfaceStatistics[] statistics = myImpl.interfaceStatisticsDump();
+        List<InterfaceStatistics> statistics = myImpl.getInterfaceStatistics();
 
         if (statistics == null) {
             System.out.println("in java - dump was null");
-            return;
+            System.exit(1);
         }
 
-        if (statistics.length == 0) {
+        if (statistics.size() == 0) {
             System.out.println("in java - dump was empty");
-            return;
+            System.exit(2);
         }
 
-        for (int i = 0; i < statistics.length; i++) {
-            System.out.println(statistics[i].toString());
+        for (InterfaceStatistics stat: statistics) {
+            System.out.println(stat.toString());
         }
     }
 }

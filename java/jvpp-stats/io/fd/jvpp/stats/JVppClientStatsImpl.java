@@ -19,20 +19,17 @@ package io.fd.jvpp.stats;
 import static io.fd.jvpp.NativeLibraryLoader.loadLibrary;
 import static java.lang.String.format;
 
+import io.fd.jvpp.stats.dto.InterfaceStatistics;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.List;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import io.fd.jvpp.stats.dto.InterfaceStatistics;
+public class JVppClientStatsImpl implements AutoCloseable {
 
-public class JVppClientStatsImpl {
+    private boolean connected;
 
     private static final Logger LOG = Logger.getLogger(JVppClientStatsImpl.class.getName());
 
@@ -46,5 +43,48 @@ public class JVppClientStatsImpl {
             }
         }
 
-    public static native InterfaceStatistics[] interfaceStatisticsDump();
+    private static native InterfaceStatistics[] interfaceStatisticsDump();
+    private static native int statSegmentConnect();
+    private static native void statSegmentDisconnect();
+
+    public synchronized List<InterfaceStatistics> getInterfaceStatistics() {
+        if (!this.connected) {
+            LOG.severe("Unable to dump statistics. Client isn't connected. Try reconnecting.");
+            return null;
+        }
+        InterfaceStatistics[] statDump = interfaceStatisticsDump();
+        List<InterfaceStatistics> statistics = new LinkedList();
+        if (statDump != null) {
+            statistics = Arrays.asList(statDump);
+        }
+        return statistics;
+    }
+
+    public JVppClientStatsImpl() {
+        connectClient();
+    }
+
+    public boolean reconnect() {
+        connectClient();
+        return this.connected;
+    }
+
+    private void connectClient() {
+        if (!this.connected) {
+            if (statSegmentConnect() == 0) {
+                this.connected = true;
+            }
+        }
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public void close() {
+        if (this.connected) {
+            statSegmentDisconnect();
+            this.connected = false;
+        }
+    }
 }
