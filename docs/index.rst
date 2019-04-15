@@ -11,6 +11,7 @@ Welcome to JVPP's documentation!
 
    jvpp
    docs
+   release_notes
 
 
 Indices and tables
