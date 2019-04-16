@@ -185,51 +185,6 @@ FILE(GLOB_RECURSE files RELATIVE
 # message("COREFILES: ${corefiles}")
 java_api_binding(core core ${files})
 
-############# Stats package ##################
-set(PACKAGE_DIR_JVPP_STATS io/fd/jvpp)
-unset(files)
-FILE(GLOB files RELATIVE
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/jvpp-stats/${PACKAGE_DIR_JVPP_STATS}/*.java
-        ${CMAKE_CURRENT_SOURCE_DIR}/jvpp-stats/${PACKAGE_DIR_JVPP_STATS}/*/*.java
-        ${CMAKE_CURRENT_SOURCE_DIR}/jvpp-stats/${PACKAGE_DIR_JVPP_STATS}/*/*/*.java
-        )
-
-add_custom_target(jvpp-stats-classes ALL)
-add_dependencies(jvpp-stats-classes jvpp-registry)
-add_custom_command(TARGET jvpp-stats-classes
-        PRE_BUILD
-        COMMAND mkdir -p jvpp-stats/target
-        COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/jvpp-stats
-        COMMAND ${Java_JAVAC_EXECUTABLE}
-        ARGS -source 1.8 -target 1.8 -cp ${CMAKE_CURRENT_BINARY_DIR}/jvpp-registry-${JAPI_LIB_VERSION}.jar
-        -d ${CMAKE_CURRENT_SOURCE_DIR}/jvpp-stats/target -h jvpp-stats ${files}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        )
-
-add_library(jvpp_stats SHARED jvpp-stats/jvpp_stats.c)
-target_link_libraries(jvpp_stats ${JVPP_LIBS} vppapiclient vppinfra)
-include_directories(jvpp-stats)
-add_dependencies(jvpp_stats jvpp_common jvpp_registry jvpp-stats-classes)
-
-add_custom_target(jvpp-stats ALL)
-add_dependencies(jvpp-stats jvpp_stats jvpp-stats-classes)
-add_custom_command(TARGET jvpp-stats
-        PRE_BUILD
-        COMMAND cp ${CMAKE_BINARY_DIR}/build-root/lib/libjvpp_stats.so jvpp-stats/target
-        COMMAND ${Java_JAR_EXECUTABLE} ARGS cf
-        ${CMAKE_CURRENT_BINARY_DIR}/jvpp-stats-${JAPI_LIB_VERSION}.jar
-        -C jvpp-stats/target .
-        COMMAND rm ARGS -rf jvpp-stats/target
-        jvpp-stats/io_fd_jvpp_*.h
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMENT "JAR_GEN stats"
-        )
-install(
-        FILES ${CMAKE_CURRENT_BINARY_DIR}/jvpp-stats-${JAPI_LIB_VERSION}.jar
-        DESTINATION share/java
-)
-
 ############ Plugin Packages #######################
 unset(files)
 unset(pluginfiles)
