@@ -149,6 +149,7 @@ elseif (${RELEASE_ID} IN_LIST RHBasedOS)
             COMMAND grep -v flowprobe
             COMMAND grep -v gbp
             COMMAND grep -v gtpu
+            COMMAND grep -v http_static
             COMMAND grep -v igmp
             COMMAND grep -v ikev2
             COMMAND grep -v ioam_cache
