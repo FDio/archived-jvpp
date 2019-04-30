@@ -44,7 +44,7 @@ void call_on_error(const char* callName, int contextId, int retval,
         jclass callbackClass, jobject callbackObject,
         jclass callbackExceptionClass) {
     DEBUG_LOG("\nCallOnError : callback=%s, retval=%d, context=%d\n", callName,
-            clib_net_to_host_u32(retval), clib_net_to_host_u32(context));
+            clib_net_to_host_u32(retval), clib_net_to_host_u32(contextId));
     JNIEnv *env = jvpp_main.jenv;
     if (!callbackClass) {
         DEBUG_LOG("CallOnError : jm->callbackClass is null!\n");
