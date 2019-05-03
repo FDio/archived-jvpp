@@ -4,3 +4,19 @@
 Makefile
 cmake_install.cmake
 *.jar
+
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# jvpp generated files
+/*/target/
+/*/*_gen.h
+/*/*.files
+/*/io_fd_jvpp_*Impl.h
+/jvpp-registry/io_fd_jvpp_VppJNIConnection.h
