@@ -14,7 +14,9 @@
  */
 
 #include <vnet/vnet.h>
-
+#include <jvpp-common/string_t.h>
+#include <vlibapi/api_types.h>
+#include <stdbool.h>
 #include <nat/nat_msg_enum.h>
 #define vl_typedefs             /* define message structures */
 #include <nat/nat_all_api_h.h>

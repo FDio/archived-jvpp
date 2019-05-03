@@ -24,6 +24,7 @@ import io.fd.jvpp.nat.JVppNatImpl;
 import io.fd.jvpp.nat.callback.Nat44InterfaceAddDelFeatureReplyCallback;
 import io.fd.jvpp.nat.dto.Nat44InterfaceAddDelFeature;
 import io.fd.jvpp.nat.dto.Nat44InterfaceAddDelFeatureReply;
+import io.fd.jvpp.nat.types.NatConfigFlags;
 
 public class CallbackApiExample {
 
@@ -54,9 +55,11 @@ public class CallbackApiExample {
 
             System.out.println("Sending Nat44InterfaceAddDelFeature request...");
             Nat44InterfaceAddDelFeature request = new Nat44InterfaceAddDelFeature();
-            request.isAdd = 1;
-            request.isInside = 1;
-            request.swIfIndex = 1;
+            request.isAdd = true;
+            request.swIfIndex = new io.fd.jvpp.nat.types.InterfaceIndex();
+            request.swIfIndex.interfaceindex = 1;
+            request.flags = new NatConfigFlags();
+            request.flags.add(NatConfigFlags.NatConfigFlagsOptions.NAT_IS_INSIDE);
             final int result = jvpp.send(request);
             System.out.printf("Nat44InterfaceAddDelFeature send result = %d%n", result);
 
