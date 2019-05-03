@@ -579,6 +579,8 @@ class JVppModel(object):
         type_name = _extract_type_name(field[0])
 
         if type_name in self._types_by_name:
+            if field[0] == "string":
+                return Field(field[1], self._types_by_name[type_name])
             if len(field) > 2:
                 # Array field
                 array_len_field = None

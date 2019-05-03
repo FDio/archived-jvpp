@@ -19,32 +19,3 @@
 #include <vlibapi/api_types.h>
 
 #endif //VPP_JVPP_CORE_H
-
-// /**
-// * Host to network byte order conversion for string type. Converts String in Java to VPP string type.
-// * typedef struct
-// * {
-// *   u32 length;
-// *   u8 buf[0];
-// * } __attribute__ ((packed)) vl_api_string_t;
-// */
-static  void _host_to_net_string(JNIEnv * env, jstring javaString, vl_api_string_t * vl_api_string);
-
-
-//
-// /**
-// * Network to host byte order conversion for string type. Converts VPP string type to String in Java
-// * typedef struct
-// * {
-// *   u32 length;
-// *   u8 buf[0];
-// * } __attribute__ ((packed)) vl_api_string_t;
-// */
-static jstring _net_to_host_string(JNIEnv * env, const vl_api_string_t * _net);
-
-
-//
-// /**
-// * Returns the length of jstring as size_t
-// */
-static size_t jstr_length(JNIEnv *env, jstring string);

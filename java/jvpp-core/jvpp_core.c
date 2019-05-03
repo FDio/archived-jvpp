@@ -25,6 +25,7 @@
 #include <vlibmemory/api.h>
 #include <jni.h>
 #include <jvpp_core.h>
+#include <jvpp-common/string_t.h>
 
 
 // TODO: generate jvpp_plugin_name.c files (or at least reuse plugin's main structure)
@@ -105,32 +106,4 @@ void JNI_OnUnload(JavaVM *vm, void *reserved) {
         return;
     }
     delete_class_references(env);
-}
-
-
-static void _host_to_net_string(JNIEnv * env, jstring javaString, vl_api_string_t * vl_api_string)
-{
-    const char *nativeString;
-    // prevent null, which causes jni to crash
-    if (NULL != javaString) {
-        nativeString = (*env)->GetStringUTFChars(env, javaString, 0);
-    } else{
-        nativeString = "";
-    }
-
-    vl_api_to_api_string(jstr_length(env, javaString) + 1, nativeString, vl_api_string);
-
-    (*env)->ReleaseStringUTFChars(env, javaString, nativeString);
-}
-
-
-static jstring _net_to_host_string(JNIEnv * env, const vl_api_string_t * _net)
-{
-    return (*env)->NewStringUTF(env, (char *)_net->buf);
-}
-
-
-static size_t jstr_length(JNIEnv *env, jstring string)
-{
-    return ((int) (*env)->GetStringUTFLength(env, string));
 }
