@@ -16,25 +16,27 @@
 
 package io.fd.jvpp.stats.dto;
 
+import java.util.Objects;
+
 public class InterfaceStatistics {
 
-    private int swIfIndex;
-    private int outErrors;
-    private int outMulticastPkts;
-    private int outUnicastPkts;
-    private int outBroadcastPkts;
-    private int outBytes;
-    private int inErrors;
-    private int inMulticastPkts;
-    private int inUnicastPkts;
-    private int inBroadcastPkts;
-    private int inBytes;
+    public int swIfIndex;
+    public int outErrors;
+    public int outMulticastPkts;
+    public int outUnicastPkts;
+    public int outBroadcastPkts;
+    public int outBytes;
+    public int inErrors;
+    public int inMulticastPkts;
+    public int inUnicastPkts;
+    public int inBroadcastPkts;
+    public int inBytes;
 
     public InterfaceStatistics(final int swIfIndex, final int outErrors, final int outMulticastPkts,
-                               final int outUnicastPkts,
-                               final int outBroadcastPkts, final int outBytes, final int inErrors,
-                               final int inMulticastPkts, final int inUnicastPkts,
-                               final int inBroadcastPkts, final int inBytes) {
+                               final int outUnicastPkts, final int outBroadcastPkts,
+                               final int outBytes, final int inErrors, final int inMulticastPkts,
+                               final int inUnicastPkts, final int inBroadcastPkts,
+                               final int inBytes) {
         this.swIfIndex = swIfIndex;
         this.outErrors = outErrors;
         this.outMulticastPkts = outMulticastPkts;
@@ -48,52 +50,37 @@ public class InterfaceStatistics {
         this.inBytes = inBytes;
     }
 
-    public int getSwIfIndex() {
-        return swIfIndex;
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        final InterfaceStatistics otherIfcStats = (InterfaceStatistics) other;
+        return swIfIndex == otherIfcStats.swIfIndex &&
+                outErrors == otherIfcStats.outErrors &&
+                outMulticastPkts == otherIfcStats.outMulticastPkts &&
+                outUnicastPkts == otherIfcStats.outUnicastPkts &&
+                outBroadcastPkts == otherIfcStats.outBroadcastPkts &&
+                outBytes == otherIfcStats.outBytes &&
+                inErrors == otherIfcStats.inErrors &&
+                inMulticastPkts == otherIfcStats.inMulticastPkts &&
+                inUnicastPkts == otherIfcStats.inUnicastPkts &&
+                inBroadcastPkts == otherIfcStats.inBroadcastPkts &&
+                inBytes == otherIfcStats.inBytes;
     }
 
-    public int getOutErrors() {
-        return outErrors;
+    @Override
+    public int hashCode() {
+        return Objects
+                .hash(swIfIndex, outErrors, outMulticastPkts, outUnicastPkts, outBroadcastPkts, outBytes, inErrors,
+                        inMulticastPkts, inUnicastPkts, inBroadcastPkts, inBytes);
     }
 
-    public int getOutMulticastPkts() {
-        return outMulticastPkts;
-    }
-
-    public int getOutUnicastPkts() {
-        return outUnicastPkts;
-    }
-
-    public int getOutBroadcastPkts() {
-        return outBroadcastPkts;
-    }
-
-    public int getOutBytes() {
-        return outBytes;
-    }
-
-    public int getInErrors() {
-        return inErrors;
-    }
-
-    public int getInMulticastPkts() {
-        return inMulticastPkts;
-    }
-
-    public int getInUnicastPkts() {
-        return inUnicastPkts;
-    }
-
-    public int getInBroadcastPkts() {
-        return inBroadcastPkts;
-    }
-
-    public int getInBytes() {
-        return inBytes;
-    }
-
-    @java.lang.Override
-    public java.lang.String toString() {
+    @Override
+    public String toString() {
         return "InterfaceStatistics{" +
                 "swIfIndex=" + swIfIndex +
                 ", outErrors=" + outErrors +

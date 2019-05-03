@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 PANTHEON.tech.
+ * Copyright (c) 2019 PANTHEON.tech., Cisco and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,32 @@
 #ifndef PROJECT_JVPP_STATS_H
 #define PROJECT_JVPP_STATS_H
 
+#include <vnet/vnet.h>
+#include <vnet/ip/ip.h>
+#include <vnet/api_errno.h>
+#include <vlibapi/api.h>
+#include <vlibmemory/api.h>
+#include <jni.h>
+
+/* Global state for JVPP-STATS */
+typedef struct {
+    /* Pointer to shared memory queue */
+    svm_queue_t *vl_input_queue;
+
+    /* VPP api client index */
+    u32 my_client_index;
+
+    /* Callback object and class references enabling asynchronous Java calls */
+    jobject callbackObject;
+    jclass callbackClass;
+} stats_main_t;
+
+stats_main_t stats_main __attribute__((aligned (64)));
+
+JNIEXPORT void JNICALL Java_io_fd_jvpp_stats_JVppStatsImpl_init0(JNIEnv *, jclass, jobject, jlong, jint);
+
+JNIEXPORT void JNICALL Java_io_fd_jvpp_stats_JVppStatsImpl_close0(JNIEnv *, jclass);
+
+JNIEXPORT jint JNICALL Java_io_fd_jvpp_stats_JVppStatsImpl_interfaceStatisticsDump0(JNIEnv *, jclass);
+
 #endif //PROJECT_JVPP_STATS_H
-
-
-typedef struct interface_statistics{
-    int rx_errors;
-    int rx_bytes;
-    int rx_unicast_pkts;
-    int rx_broadcast_pkts;
-    int rx_multicast_pkts;
-    int tx_errors;
-    int tx_bytes;
-    int tx_unicast_pkts;
-    int tx_broadcast_pkts;
-    int tx_multicast_pkts;
-} int_stats_t;
-
-int_stats_t interface_statistics __attribute__((aligned (64)));

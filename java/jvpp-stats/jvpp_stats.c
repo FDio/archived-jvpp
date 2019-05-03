@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 PANTHEON.tech.
+ * Copyright (c) 2019 PANTHEON.tech., Cisco and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,123 +14,80 @@
  * limitations under the License.
  */
 
-#include "io_fd_jvpp_stats_JVppClientStatsImpl.h"
+#include "io_fd_jvpp_stats_JVppStatsImpl.h"
 #include "jvpp_stats.h"
-#include <vpp-api/client/stat_client.h>
+#include "jvpp_interface_stats.h"
 #include <vppinfra/vec.h>
 #include <vppinfra/format.h>
+#include <vnet/api_errno.h>
+#include <vlibapi/api.h>
+#include <vlibmemory/api.h>
+#include <jni.h>
+#include <vnet/vnet.h>
+#include <jvpp-common/jvpp_common.h>
+#include <vpp/api/vpe_msg_enum.h>
 
+#define vl_typedefs             /* define message structures */
 
-void set_field(int_stats_t* stats, int index, const char* field_name, int packets, int bytes) {
-    if (strcmp(field_name, "/if/rx-error") == 0) {
-        stats[index].rx_errors = packets;
-    } else if (strcmp(field_name, "/if/tx-error") == 0) {
-        stats[index].tx_errors = packets;
-    } else if (strcmp(field_name, "/if/tx") == 0) {
-        stats[index].tx_bytes = bytes;
-    } else if (strcmp(field_name, "/if/tx-multicast") == 0) {
-        stats[index].tx_multicast_pkts= packets;
-    } else if (strcmp(field_name, "/if/tx-unicast") == 0) {
-        stats[index].tx_unicast_pkts= packets;
-    } else if (strcmp(field_name, "/if/tx-broadcast") == 0) {
-        stats[index].tx_broadcast_pkts= packets;
-    } else if (strcmp(field_name, "/if/rx") == 0) {
-        stats[index].rx_bytes = bytes;
-    } else if (strcmp(field_name, "/if/rx-multicast") == 0) {
-        stats[index].rx_multicast_pkts= packets;
-    } else if (strcmp(field_name, "/if/rx-unicast") == 0) {
-        stats[index].rx_unicast_pkts= packets;
-    } else if (strcmp(field_name, "/if/rx-broadcast") == 0) {
-        stats[index].rx_broadcast_pkts= packets;
-    }
-}
-stat_segment_data_t* get_statistics_dump() {
-    u8 **patterns = 0;
-    u32 *dir;
-    vec_add1(patterns, (u8*)"/if/rx");
-    vec_add1(patterns, (u8*)"/if/tx");
-    dir = stat_segment_ls(patterns);
-    return stat_segment_dump(dir);
-}
+#include <vpp/api/vpe_all_api_h.h>
 
-JNIEXPORT jobjectArray JNICALL Java_io_fd_jvpp_stats_JVppClientStatsImpl_interfaceStatisticsDump(JNIEnv *env,
-        jclass jclazz) {
+#undef vl_typedefs
 
-    stat_segment_data_t *res;
-    int i, j, k, interface_count;
+JNIEXPORT void JNICALL Java_io_fd_jvpp_stats_JVppStatsImpl_init0
+        (JNIEnv *env, jclass clazz, jobject callback, jlong queue_address, jint my_client_index) {
+    stats_main_t *plugin_main = &stats_main;
+    clib_warning ("Java_io_fd_jvpp_stats_JVppStatsImpl_init0");
 
-    res = get_statistics_dump();
-    if (res == NULL) {
-        fprintf (stderr, "Interface Statistics dump failed.\n");
-        return NULL;
-    }
+    plugin_main->my_client_index = my_client_index;
+    plugin_main->vl_input_queue = uword_to_pointer (queue_address, svm_queue_t *);
 
-    if (vec_len (res) > 0) {
-        if ((res[0].simple_counter_vec != 0) && (vec_len (res[0].simple_counter_vec) > 0)) {
-             interface_count = vec_len (res[0].simple_counter_vec[0]);
-        } else if ((res[0].combined_counter_vec != 0) && (vec_len (res[0].combined_counter_vec) > 0)) {
-            interface_count = vec_len (res[0].combined_counter_vec[0]);
-        }
-    }
-    int_stats_t ifc_stats[interface_count];
-    memset(ifc_stats, 0, interface_count*sizeof(int_stats_t));
+    plugin_main->callbackObject = (*env)->NewGlobalRef(env, callback);
+    plugin_main->callbackClass = (jclass) (*env)->NewGlobalRef(env, (*env)->GetObjectClass(env, callback));
 
-    for (i = 0; i < vec_len (res); i++)
-    {
-        switch (res[i].type)
-        {
-            case STAT_DIR_TYPE_COUNTER_VECTOR_SIMPLE:
-                if (res[i].simple_counter_vec == 0)
-                    continue;
-                for (k = 0; k < vec_len (res[i].simple_counter_vec); k++)
-                    for (j = 0; j < vec_len (res[i].simple_counter_vec[k]); j++) {
-                         set_field(ifc_stats, j, res[i].name, res[i].simple_counter_vec[k][j], 0);
-                    }
-                break;
-
-            case STAT_DIR_TYPE_COUNTER_VECTOR_COMBINED:
-                if (res[i].combined_counter_vec == 0)
-                    continue;
-                for (k = 0; k < vec_len (res[i].combined_counter_vec); k++)
-                    for (j = 0; j < vec_len (res[i].combined_counter_vec[k]); j++) {
-                        set_field(ifc_stats, j, res[i].name, res[i].combined_counter_vec[k][j].packets,
-                        res[i].combined_counter_vec[k][j].bytes);
-                    }
-                break;
-
-            default:
-                ;
-        }
-    }
-    stat_segment_data_free (res);
-
-    jobjectArray retArray;
-    jclass ifcStatsClass = (*env)->FindClass(env, "io/fd/jvpp/stats/dto/InterfaceStatistics");
-    retArray= (jobjectArray)(*env)->NewObjectArray(env, interface_count,ifcStatsClass, NULL);
-    jmethodID constructor = (*env)->GetMethodID(env, ifcStatsClass, "<init>", "(IIIIIIIIIII)V");
-
-    for (int i = 0; i < interface_count; i++) {
-        jobject newClientObj =  (*env)->NewObject(env, ifcStatsClass, constructor, i,
-        ifc_stats[i].tx_errors, ifc_stats[i].tx_multicast_pkts, ifc_stats[i].tx_unicast_pkts,
-        ifc_stats[i].tx_broadcast_pkts, ifc_stats[i].tx_bytes, ifc_stats[i].rx_errors, ifc_stats[i].rx_multicast_pkts,
-        ifc_stats[i].rx_unicast_pkts, ifc_stats[i].rx_broadcast_pkts, ifc_stats[i].rx_bytes);
-        (*env)->SetObjectArrayElement(env,retArray,i,newClientObj);
-    }
-    return retArray;
-}
-
-JNIEXPORT jint JNICALL Java_io_fd_jvpp_stats_JVppClientStatsImpl_statSegmentConnect(JNIEnv *env, jclass jclazz) {
-    u8 * stat_segment_name = (u8 *) STAT_SEGMENT_SOCKET_FILE;
-    int rv = stat_segment_connect((char*)stat_segment_name);
+    int rv = stat_segment_connect(STAT_SEGMENT_SOCKET_FILE);
     if (rv < 0) {
-        fprintf(stderr, "Couldn't connect to %s. Check if socket exists/permissions.(ret stat: %d)\n",
-                stat_segment_name, rv);
-        return -1;
+        clib_warning("Couldn't connect to %s. Check if socket exists/permissions.(ret stat: %d)\n",
+                     STAT_SEGMENT_SOCKET_FILE, rv);
+        return;
     }
-    return 0;
 }
 
-JNIEXPORT void JNICALL Java_io_fd_jvpp_stats_JVppClientStatsImpl_statSegmentDisconnect(JNIEnv *env, jclass jclazz) {
+JNIEXPORT void JNICALL Java_io_fd_jvpp_stats_JVppStatsImpl_close0
+        (JNIEnv *env, jclass clazz) {
+    stats_main_t *plugin_main = &stats_main;
     stat_segment_disconnect();
-    return;
+    // cleanup:
+    (*env)->DeleteGlobalRef(env, plugin_main->callbackClass);
+    (*env)->DeleteGlobalRef(env, plugin_main->callbackObject);
+
+    plugin_main->callbackClass = NULL;
+    plugin_main->callbackObject = NULL;
+}
+
+JNIEXPORT jint JNICALL Java_io_fd_jvpp_stats_JVppStatsImpl_interfaceStatisticsDump0(JNIEnv *env, jclass jclazz) {
+    return getInterfaceStatisticsDump(env);
+}
+
+/* Attach thread to JVM and cache class references when initiating JVPP Stats */
+jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+    JNIEnv *env;
+    if ((*vm)->GetEnv(vm, (void **) &env, JNI_VERSION_1_8) != JNI_OK) {
+        return JNI_EVERSION;
+    }
+
+    if (cache_class_references(env) != 0) {
+        clib_warning ("Failed to cache class references\n");
+        return JNI_ERR;
+    }
+
+    return JNI_VERSION_1_8;
+}
+
+/* Clean up cached references when disposing JVPP Stats */
+void JNI_OnUnload(JavaVM *vm, void *reserved) {
+    JNIEnv *env;
+    if ((*vm)->GetEnv(vm, (void **) &env, JNI_VERSION_1_8) != JNI_OK) {
+        return;
+    }
+    delete_class_references(env);
 }

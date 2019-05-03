@@ -209,15 +209,19 @@ add_custom_command(TARGET jvpp-stats-classes
         )
 
 add_library(jvpp_stats SHARED jvpp-stats/jvpp_stats.c)
+add_library(jvpp_stats_registry SHARED jvpp-stats/jvpp_stats_registry.c)
 target_link_libraries(jvpp_stats ${JVPP_LIBS} vppapiclient vppinfra)
+target_link_libraries(jvpp_stats_registry ${JVPP_LIBS})
 include_directories(jvpp-stats)
 add_dependencies(jvpp_stats jvpp_common jvpp_registry jvpp-stats-classes)
+add_dependencies(jvpp_stats_registry jvpp_common jvpp_registry jvpp-stats-classes)
 
 add_custom_target(jvpp-stats ALL)
-add_dependencies(jvpp-stats jvpp_stats jvpp-stats-classes)
+add_dependencies(jvpp-stats jvpp_stats jvpp_stats_registry jvpp-stats-classes)
 add_custom_command(TARGET jvpp-stats
         PRE_BUILD
         COMMAND cp ${CMAKE_BINARY_DIR}/build-root/lib/libjvpp_stats.so jvpp-stats/target
+        COMMAND cp ${CMAKE_BINARY_DIR}/build-root/lib/libjvpp_stats_registry.so jvpp-stats/target
         COMMAND ${Java_JAR_EXECUTABLE} ARGS cf
         ${CMAKE_CURRENT_BINARY_DIR}/jvpp-stats-${JAPI_LIB_VERSION}.jar
         -C jvpp-stats/target .
