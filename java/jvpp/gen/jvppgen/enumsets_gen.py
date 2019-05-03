@@ -32,7 +32,7 @@ def generate_enumsets(work_dir, model, logger):
             json_definition=t.doc,
             java_name=type_class_name,
             java_enum_name=type_class_name + "Options",
-            constants=_generate_constants(t.constants),
+            constants=_generate_constants(t.constants, t.value.type.java_name),
             value_type=t.value.type.java_name
         )
         with open("%s/%s.java" % (work_dir, type_class_name), "w") as f:
@@ -80,7 +80,7 @@ public final class $java_name {
     public $value_type getOptionsValue() {
         $value_type optionsValue = 0;
         for ($java_enum_name opts : options) {
-            optionsValue = optionsValue | opts.value;
+            optionsValue = ($value_type) (optionsValue | opts.value);
         }
         return optionsValue;
     }
@@ -90,7 +90,7 @@ public final class $java_name {
 
         if (value == 0) {
             // if value is "0" set default value and exit
-            options.add($java_enum_name.forValue(0));
+            options.add($java_enum_name.forValue(($value_type)0));
             return;
         }
 
@@ -168,8 +168,9 @@ $constants;
 """)
 
 
-def _generate_constants(constants):
-    return ",\n".join(_CONSTANT_TEMPLATE.substitute(name=c['name'], value=c['value']) for c in constants)
+def _generate_constants(constants, type_name):
+    return ",\n".join(_CONSTANT_TEMPLATE.substitute(name=c['name'], value=c['value'],
+                                                    value_type=type_name) for c in constants)
 
 
-_CONSTANT_TEMPLATE = Template("""        $name($value)""")
+_CONSTANT_TEMPLATE = Template("""        $name(($value_type)$value)""")
