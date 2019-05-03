@@ -30,6 +30,7 @@ import io.fd.jvpp.core.dto.ShowVersion;
 import io.fd.jvpp.core.dto.ShowVersionReply;
 import io.fd.jvpp.core.dto.SwInterfaceDetails;
 import io.fd.jvpp.core.dto.SwInterfaceDump;
+import io.fd.jvpp.core.types.InterfaceIndex;
 import java.nio.charset.StandardCharsets;
 
 public class CallbackApiExample {
@@ -55,6 +56,8 @@ public class CallbackApiExample {
 
             System.out.println("Sending SwInterfaceDump request...");
             SwInterfaceDump swInterfaceDumpRequest = new SwInterfaceDump();
+            swInterfaceDumpRequest.swIfIndex = new InterfaceIndex();
+            swInterfaceDumpRequest.swIfIndex.interfaceindex = ~0;
             swInterfaceDumpRequest.nameFilterValid = 0;
             swInterfaceDumpRequest.nameFilter = "".getBytes(StandardCharsets.UTF_8);
             jvpp.send(swInterfaceDumpRequest);
