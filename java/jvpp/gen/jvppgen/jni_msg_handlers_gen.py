@@ -101,7 +101,4 @@ _ERR_HANDLER_TEMPLATE = Template("""
         call_on_error("${name}", mp->context, mp->retval, plugin_main->callbackClass, plugin_main->callbackObject, callbackExceptionClass);
         return;
     }
-    if (mp->retval == VNET_API_ERROR_IN_PROGRESS) {
-        clib_warning("Result in progress");
-        return;
-    }""")
+    """)
