@@ -64,4 +64,21 @@ public final class CallbackJVppStatsFacadeCallback implements io.fd.jvpp.stats.c
             callback.onInterfaceStatisticsDetails(reply);
         }
     }
+
+    @Override
+    public void onInterfaceNamesDetails(final io.fd.jvpp.stats.dto.InterfaceNamesDetails reply) {
+
+        io.fd.jvpp.stats.callback.InterfaceNamesDetailsCallback callback;
+        final int replyId = reply.context;
+        if (LOG.isLoggable(java.util.logging.Level.FINE)) {
+            LOG.fine(String.format("Received InterfaceNamesDetails event message: %s", reply));
+        }
+        synchronized (requests) {
+            callback = (io.fd.jvpp.stats.callback.InterfaceNamesDetailsCallback) requests.remove(replyId);
+        }
+
+        if (callback != null) {
+            callback.onInterfaceNamesDetails(reply);
+        }
+    }
 }

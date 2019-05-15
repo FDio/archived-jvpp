@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package io.fd.jvpp.stats;
+package io.fd.jvpp.stats.callback;
 
 /**
- * <p>Java representation of plugin's api file.
+ * <p>Represents callback for plugin's api message.
  */
-public interface JVppStats extends io.fd.jvpp.JVpp {
-    /**
-     * Generic dispatch method for sending requests to VPP
-     *
-     * @throws io.fd.jvpp.VppInvocationException if send request had failed
-     */
-    int send(io.fd.jvpp.dto.JVppRequest request) throws io.fd.jvpp.VppInvocationException;
+public interface InterfaceNamesDetailsCallback extends io.fd.jvpp.callback.JVppCallback {
 
-    int interfaceStatisticsDump() throws io.fd.jvpp.VppInvocationException;
-
-    int interfaceNamesDump() throws io.fd.jvpp.VppInvocationException;
+    void onInterfaceNamesDetails(io.fd.jvpp.stats.dto.InterfaceNamesDetails reply);
 }

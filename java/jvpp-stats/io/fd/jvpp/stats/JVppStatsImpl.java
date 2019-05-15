@@ -82,6 +82,8 @@ public class JVppStatsImpl implements io.fd.jvpp.stats.JVppStats {
 
     private static native int interfaceStatisticsDump0() throws io.fd.jvpp.VppInvocationException;
 
+    private static native int interfaceNamesDump0() throws io.fd.jvpp.VppInvocationException;
+
     private static native void close0();
 
     @Override
@@ -110,6 +112,17 @@ public class JVppStatsImpl implements io.fd.jvpp.stats.JVppStats {
         int result = interfaceStatisticsDump0();
         if (result < 0) {
             throw new io.fd.jvpp.VppInvocationException("interfaceStatisticsDump", result);
+        }
+        return result;
+    }
+
+    @Override
+    public int interfaceNamesDump() throws VppInvocationException {
+        connection.checkActive();
+        LOG.fine("Sending interfaceNamesDump event message");
+        int result = interfaceNamesDump0();
+        if (result < 0) {
+            throw new io.fd.jvpp.VppInvocationException("interfaceNamesDump", result);
         }
         return result;
     }

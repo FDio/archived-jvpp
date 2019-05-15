@@ -36,8 +36,6 @@
 JNIEXPORT void JNICALL Java_io_fd_jvpp_stats_JVppStatsImpl_init0
         (JNIEnv *env, jclass clazz, jobject callback, jlong queue_address, jint my_client_index) {
     stats_main_t *plugin_main = &stats_main;
-    clib_warning ("Java_io_fd_jvpp_stats_JVppStatsImpl_init0");
-
     plugin_main->my_client_index = my_client_index;
     plugin_main->vl_input_queue = uword_to_pointer (queue_address, svm_queue_t *);
 
@@ -66,6 +64,10 @@ JNIEXPORT void JNICALL Java_io_fd_jvpp_stats_JVppStatsImpl_close0
 
 JNIEXPORT jint JNICALL Java_io_fd_jvpp_stats_JVppStatsImpl_interfaceStatisticsDump0(JNIEnv *env, jclass jclazz) {
     return getInterfaceStatisticsDump(env);
+}
+
+JNIEXPORT jint JNICALL Java_io_fd_jvpp_stats_JVppStatsImpl_interfaceNamesDump0(JNIEnv *env, jclass jclazz) {
+    return getInterfaceNamesDump(env);
 }
 
 /* Attach thread to JVM and cache class references when initiating JVPP Stats */

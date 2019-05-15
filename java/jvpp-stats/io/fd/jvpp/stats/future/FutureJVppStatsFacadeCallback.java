@@ -16,6 +16,7 @@
 
 package io.fd.jvpp.stats.future;
 
+import io.fd.jvpp.stats.dto.InterfaceNamesDetailsReplyDump;
 import io.fd.jvpp.stats.dto.InterfaceStatisticsDetailsReplyDump;
 
 /**
@@ -76,6 +77,33 @@ public final class FutureJVppStatsFacadeCallback implements io.fd.jvpp.stats.cal
                 requests.put(replyId, completableFuture);
             }
             completableFuture.getReplyDump().interfaceStatisticsDetails = reply;
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void onInterfaceNamesDetails(final io.fd.jvpp.stats.dto.InterfaceNamesDetails reply) {
+        io.fd.jvpp.stats.future.AbstractFutureJVppInvoker.CompletableDumpFuture<InterfaceNamesDetailsReplyDump>
+                completableFuture;
+        final int replyId = reply.context;
+        if (LOG.isLoggable(java.util.logging.Level.FINE)) {
+            LOG.fine(String.format("Received InterfaceNamesDetails event message: %s", reply));
+        }
+        synchronized (requests) {
+            completableFuture =
+                    (io.fd.jvpp.stats.future.AbstractFutureJVppInvoker.CompletableDumpFuture<InterfaceNamesDetailsReplyDump>) requests
+                            .get(replyId);
+
+            if (completableFuture == null) {
+                // reply received before writer created future,
+                // create new future, and put into map to notify sender that reply is already received,
+                // following details replies will add information to this future
+                completableFuture =
+                        new io.fd.jvpp.stats.future.AbstractFutureJVppInvoker.CompletableDumpFuture<>(replyId,
+                                new InterfaceNamesDetailsReplyDump());
+                requests.put(replyId, completableFuture);
+            }
+            completableFuture.getReplyDump().interfaceNamesDetails = reply;
         }
     }
 }

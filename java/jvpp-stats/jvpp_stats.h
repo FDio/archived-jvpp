@@ -45,4 +45,6 @@ JNIEXPORT void JNICALL Java_io_fd_jvpp_stats_JVppStatsImpl_close0(JNIEnv *, jcla
 
 JNIEXPORT jint JNICALL Java_io_fd_jvpp_stats_JVppStatsImpl_interfaceStatisticsDump0(JNIEnv *, jclass);
 
+JNIEXPORT jint JNICALL Java_io_fd_jvpp_stats_JVppStatsImpl_interfaceNamesDump0(JNIEnv *, jclass);
+
 #endif //PROJECT_JVPP_STATS_H

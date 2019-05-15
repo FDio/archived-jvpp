@@ -24,6 +24,9 @@
 jclass interfaceStatisticsDumpClass;
 jclass interfaceStatisticsClass;
 jclass interfaceStatisticsDetailsClass;
+jclass interfaceNamesDumpClass;
+jclass interfaceNameClass;
+jclass interfaceNamesDetailsClass;
 jclass callbackExceptionClass;
 
 typedef struct interface_statistics {
@@ -41,6 +44,12 @@ typedef struct interface_statistics {
     int tx_multicast_pkts;
 
 } vl_api_interface_statistics_details_t;
+
+typedef struct interface_names {
+    int context;
+    int sw_if_index;
+    char *name;
+} vl_api_interface_names_details_t;
 
 static int cache_class_references(JNIEnv *env) {
 
@@ -62,6 +71,26 @@ static int cache_class_references(JNIEnv *env) {
         (*env)->ExceptionDescribe(env);
         return JNI_ERR;
     }
+
+    interfaceNamesDumpClass = (jclass) (*env)->NewGlobalRef(env, (*env)->FindClass(env,
+                                                                                   "io/fd/jvpp/stats/dto/InterfaceNamesDump"));
+    if ((*env)->ExceptionCheck(env)) {
+        (*env)->ExceptionDescribe(env);
+        return JNI_ERR;
+    }
+    interfaceNamesDetailsClass = (jclass) (*env)->NewGlobalRef(env, (*env)->FindClass(env,
+                                                                                      "io/fd/jvpp/stats/dto/InterfaceNamesDetails"));
+    if ((*env)->ExceptionCheck(env)) {
+        (*env)->ExceptionDescribe(env);
+        return JNI_ERR;
+    }
+    interfaceNameClass = (jclass) (*env)->NewGlobalRef(env, (*env)->FindClass(env,
+                                                                               "io/fd/jvpp/stats/dto/InterfaceName"));
+    if ((*env)->ExceptionCheck(env)) {
+        (*env)->ExceptionDescribe(env);
+        return JNI_ERR;
+    }
+
     callbackExceptionClass = (jclass) (*env)->NewGlobalRef(env,
                                                            (*env)->FindClass(env, "io/fd/jvpp/VppCallbackException"));
     if ((*env)->ExceptionCheck(env)) {
@@ -81,6 +110,15 @@ static void delete_class_references(JNIEnv *env) {
     }
     if (interfaceStatisticsClass) {
         (*env)->DeleteGlobalRef(env, interfaceStatisticsClass);
+    }
+    if (interfaceNamesDumpClass) {
+        (*env)->DeleteGlobalRef(env, interfaceNamesDumpClass);
+    }
+    if (interfaceNamesDetailsClass) {
+        (*env)->DeleteGlobalRef(env, interfaceNamesDetailsClass);
+    }
+    if (interfaceNameClass) {
+        (*env)->DeleteGlobalRef(env, interfaceNameClass);
     }
     if (callbackExceptionClass) {
         (*env)->DeleteGlobalRef(env, callbackExceptionClass);
@@ -150,6 +188,60 @@ interface_statistics_details_handler(JNIEnv *env, vl_api_interface_statistics_de
     (*env)->DeleteLocalRef(env, dto);
 }
 
+/**
+ * Handler for interface_names_details message.
+ */
+static void
+interface_names_details_handler(JNIEnv *env, vl_api_interface_names_details_t *ifc_names, int ifc_count) {
+    stats_main_t *plugin_main = &stats_main;
+    jthrowable exc;
+    if (CLIB_DEBUG > 1)
+        clib_warning ("Received interface_names_details event message");
+
+    jmethodID constructor = (*env)->GetMethodID(env, interfaceNamesDetailsClass, "<init>", "(II)V");
+
+    // User does not have to provide callbacks for all VPP messages.
+    // We are ignoring messages that are not supported by user.
+    (*env)->ExceptionClear(env); // just in case exception occurred in different place and was not properly cleared
+    jmethodID callbackMethod = (*env)->GetMethodID(env, plugin_main->callbackClass, "onInterfaceNamesDetails",
+                                                   "(Lio/fd/jvpp/stats/dto/InterfaceNamesDetails;)V");
+    exc = (*env)->ExceptionOccurred(env);
+    if (exc) {
+        clib_warning(
+                "Unable to extract onInterfaceNamesDetails method reference from stats plugin's callbackClass. Ignoring message.\n");
+        (*env)->ExceptionDescribe(env);
+        (*env)->ExceptionClear(env);
+        return;
+    }
+    jobject dto = (*env)->NewObject(env, interfaceNamesDetailsClass, constructor, ifc_count, ifc_names->context);
+    jfieldID interfaceNamesId = (*env)->GetFieldID(env, interfaceNamesDetailsClass, "interfaceNames",
+                                                        "[Lio/fd/jvpp/stats/dto/InterfaceName;");
+    jobject names_array = (*env)->GetObjectField(env, dto, interfaceNamesId);
+
+    jmethodID ifc_names_constructor = (*env)->GetMethodID(env, interfaceNameClass, "<init>", "(ILjava/lang/String;)V");
+    for (int i = 0; i < ifc_count; i++) {
+        jstring name = (*env)->NewStringUTF(env, (char *) ifc_names[i].name);
+        jobject element = (*env)->NewObject(env, interfaceNameClass, ifc_names_constructor,
+                                            ifc_names[i].sw_if_index,
+                                            name);
+
+        (*env)->SetObjectArrayElement(env, names_array, i, element);
+        if ((*env)->ExceptionOccurred(env)) {
+            break;
+        }
+        (*env)->DeleteLocalRef(env, element);
+    }
+    (*env)->CallVoidMethod(env, plugin_main->callbackObject, callbackMethod, dto);
+    if ((*env)->ExceptionOccurred(env)) {
+        clib_warning("Unable to call callback for stats plugin's callbackClass.\n");
+        (*env)->ExceptionDescribe(env);
+        (*env)->ExceptionClear(env);
+        return;
+    }
+    (*env)->DeleteLocalRef(env, names_array);
+    (*env)->DeleteLocalRef(env, dto);
+}
+
 static void
 set_field(vl_api_interface_statistics_details_t *stats, int index, const char *field_name, int packets, int bytes) {
     if (strcmp(field_name, "/if/rx-error") == 0) {
@@ -174,6 +266,14 @@ set_field(vl_api_interface_statistics_details_t *stats, int index, const char *f
         stats[index].rx_broadcast_pkts = packets;
     }
     stats[index].sw_if_index = index;
+}
+
+static void
+set_names_field(vl_api_interface_names_details_t *ifc_names, int index, const char *field_name, char *name) {
+    if (strcmp(field_name, "/if/names") == 0) {
+        ifc_names[index].name = name;
+    }
+    ifc_names[index].sw_if_index = index;
 }
 
 static stat_segment_data_t *get_ifc_statistics_dump() {
@@ -233,4 +333,62 @@ static jint getInterfaceStatisticsDump(JNIEnv *env) {
     stat_segment_data_free(res);
     interface_statistics_details_handler(env, ifc_stats, interface_count);
     return ifc_stats->context;
+}
+
+static stat_segment_data_t *get_ifc_names_dump() {
+    u8 **patterns = 0;
+    u32 *dir;
+    vec_add1(patterns, (u8 *) "/if/names");
+    dir = stat_segment_ls(patterns);
+    return stat_segment_dump(dir);
+}
+
+static jint getInterfaceNamesDump(JNIEnv *env) {
+    stat_segment_data_t *res;
+    int i, k, interface_count = 0;
+    u32 my_context_id = vppjni_get_context_id(&jvpp_main);
+    res = get_ifc_names_dump();
+    if (res == NULL) {
+        clib_warning("Interface Names dump failed.\n");
+        return -1;
+    }
+
+    if (vec_len (res) > 0) {
+        if ((res[0].name_vector != 0) && (vec_len (res[0].name_vector) > 0)) {
+            interface_count = vec_len (res[0].name_vector);
+        }
+    }
+    vl_api_interface_names_details_t ifc_names[interface_count];
+    memset(ifc_names, 0, interface_count * sizeof(vl_api_interface_names_details_t));
+    int length = 0;
+    for (i = 0; i < vec_len (res); i++) {
+        switch (res[i].type) {
+            case STAT_DIR_TYPE_NAME_VECTOR:
+                if (res[i].name_vector == 0)
+                    continue;
+                for (k = 0; k < interface_count; k++)
+                    if (res[i].name_vector[k]) {
+                        set_names_field(ifc_names, k, res[i].name, (char *) res[i].name_vector[k]);
+                        length ++;
+                    }
+                break;
+
+            default:;
+        }
+    }
+    vl_api_interface_names_details_t ifc_names_reduced[length];
+    memset(ifc_names_reduced, 0, length * sizeof(vl_api_interface_names_details_t));
+    ifc_names_reduced->context = my_context_id;
+    // skip null entries
+    int index = 0;
+    for (int j = 0; j < interface_count; ++j) {
+        if (ifc_names[j].name != NULL) {
+            ifc_names_reduced[index].sw_if_index = ifc_names[j].sw_if_index;
+            ifc_names_reduced[index].name = ifc_names[j].name;
+            index ++;
+        }
+    }
+    stat_segment_data_free(res);
+    interface_names_details_handler(env, ifc_names_reduced, length);
+    return ifc_names_reduced->context;
 }

@@ -16,6 +16,7 @@
 
 package io.fd.jvpp.stats.future;
 
+import io.fd.jvpp.stats.dto.InterfaceNamesDetailsReplyDump;
 import io.fd.jvpp.stats.dto.InterfaceStatisticsDetailsReplyDump;
 
 /**
@@ -25,4 +26,7 @@ public interface FutureJVppStats extends io.fd.jvpp.stats.future.FutureJVppInvok
 
     java.util.concurrent.CompletionStage<InterfaceStatisticsDetailsReplyDump> interfaceStatisticsDump(
             io.fd.jvpp.stats.dto.InterfaceStatisticsDump request);
+
+    java.util.concurrent.CompletionStage<InterfaceNamesDetailsReplyDump> interfaceNamesDump(
+            io.fd.jvpp.stats.dto.InterfaceNamesDump request);
 }

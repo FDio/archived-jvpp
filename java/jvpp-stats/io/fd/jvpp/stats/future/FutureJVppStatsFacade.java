@@ -17,7 +17,10 @@
 package io.fd.jvpp.stats.future;
 
 import io.fd.jvpp.notification.EventRegistry;
+import io.fd.jvpp.stats.dto.InterfaceNamesDetailsReplyDump;
+import io.fd.jvpp.stats.dto.InterfaceNamesDump;
 import io.fd.jvpp.stats.dto.InterfaceStatisticsDetailsReplyDump;
+import java.util.concurrent.CompletionStage;
 
 /**
  * <p>Implementation of FutureJVpp based on AbstractFutureJVppInvoker
@@ -44,6 +47,11 @@ public class FutureJVppStatsFacade extends io.fd.jvpp.stats.future.AbstractFutur
     public java.util.concurrent.CompletionStage<InterfaceStatisticsDetailsReplyDump> interfaceStatisticsDump(
             io.fd.jvpp.stats.dto.InterfaceStatisticsDump request) {
         return send(request, new InterfaceStatisticsDetailsReplyDump());
+    }
+
+    @Override
+    public CompletionStage<InterfaceNamesDetailsReplyDump> interfaceNamesDump(final InterfaceNamesDump request) {
+        return send(request, new InterfaceNamesDetailsReplyDump());
     }
 
     @Override

@@ -19,5 +19,6 @@ package io.fd.jvpp.stats.callback;
 /**
  * Global aggregated callback interface.
  */
-public interface JVppStatsGlobalCallback extends io.fd.jvpp.stats.callback.InterfaceStatisticsDetailsCallback {
+public interface JVppStatsGlobalCallback extends io.fd.jvpp.stats.callback.InterfaceStatisticsDetailsCallback,
+        io.fd.jvpp.stats.callback.InterfaceNamesDetailsCallback {
 }
