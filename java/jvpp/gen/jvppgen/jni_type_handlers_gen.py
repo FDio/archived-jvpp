@@ -140,8 +140,21 @@ static inline ${jni_type} _net_to_host_${c_name}(vl_api_${c_name}_t _net)
 }""")
 
 
+type_to_signature_map = {
+    "jboolean" : "Z",
+    "jbyte" : "B",
+    "jchar" : "C",
+    "jshort" : "S",
+    "jint" : "I",
+    "jlong" : "J",
+    "jfloat" : "F",
+    "jdouble" : "D"
+}
+
+
 def _generate_enumset(model, t, type_handlers):
     value_type = t.value.type
+    signature = type_to_signature_map[value_type.jni_type]
     type_handlers.append(_ENUMSET_NET_TO_HOST_TEMPLATE.substitute(
         c_name=t.name,
         json_filename=model.json_api_files,
@@ -150,7 +163,8 @@ def _generate_enumset(model, t, type_handlers):
         jni_signature=value_type.jni_signature,
         jni_type=value_type.jni_type,
         jni_accessor=value_type.jni_accessor,
-        swap=_generate_scalar_host_to_net_swap(t.value)
+        swap=_generate_scalar_host_to_net_swap(t.value),
+        signature=signature
     ))
 
     type_handlers.append(_ENUMSET_HOST_TO_NET_TEMPLATE.substitute(
@@ -159,7 +173,8 @@ def _generate_enumset(model, t, type_handlers):
         json_definition=t.doc,
         class_FQN=t.jni_name,
         jni_type=value_type.jni_type,
-        type_swap=_generate_scalar_net_to_host_swap(t.value)
+        type_swap=_generate_scalar_net_to_host_swap(t.value),
+        signature=signature
     ))
 
 
@@ -172,7 +187,7 @@ $json_definition
 static inline void _host_to_net_${c_name}(JNIEnv * env, jobject _host, vl_api_${c_name}_t * _net)
 {
     jclass enumClass = (*env)->FindClass(env, "${class_FQN}");
-    jmethodID getValueMethod = (*env)->GetMethodID(env, enumClass, "getOptionsValue", "()I");
+    jmethodID getValueMethod = (*env)->GetMethodID(env, enumClass, "getOptionsValue", "()${signature}");
     ${jni_type} value = (*env)->CallIntMethod(env, _host, getValueMethod);
     ${swap};
 }""")
@@ -186,7 +201,7 @@ $json_definition
 static inline jobject _net_to_host_${c_name}(JNIEnv * env, vl_api_${c_name}_t _net)
 {
     jclass enumClass = (*env)->FindClass(env, "${class_FQN}");
-    jmethodID constructor = (*env)->GetMethodID(env, enumClass, "<init>", "(I)V");
+    jmethodID constructor = (*env)->GetMethodID(env, enumClass, "<init>", "(${signature})V");
     ${jni_type} value = (${jni_type}) $type_swap;
     return (*env)->NewObject(env, enumClass, constructor, value);
 }""")
