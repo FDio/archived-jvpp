@@ -27,6 +27,7 @@
 // */
 static size_t jstr_length(JNIEnv *env, jstring string)
 {
+    if (string == NULL) return 0;
     return ((int) (*env)->GetStringUTFLength(env, string));
 }
 
