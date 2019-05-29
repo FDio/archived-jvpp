@@ -380,22 +380,44 @@ def _generate_c2j_scalar_swap(msg_java_name, field, object_ref_name, struct_ref_
 
 def _generate_c2j_object_swap(msg_java_name, field, object_ref_name, struct_ref_name):
     field_type = field.type
-    return _C2J_OBJECT_SWAP_TEMPLATE.substitute(
-        java_name=field.java_name,
-        class_ref_name=msg_java_name,
-        jni_signature=field_type.jni_signature,
-        jni_name=field_type.jni_name,
-        jni_accessor=field_type.jni_accessor,
-        object_ref_name=object_ref_name,
-        struct_ref_name=struct_ref_name,
-        net_to_host_function=field_type.net_to_host_function,
-        c_name=field.name)
+    if "Union" in field_type.jni_name:
+        return _C2J_UNION_SWAP_TEMPLATE.substitute(
+            java_name=field.java_name,
+            class_ref_name=msg_java_name,
+            jni_signature=field_type.jni_signature,
+            jni_name=field_type.jni_name,
+            jni_accessor=field_type.jni_accessor,
+            object_ref_name=object_ref_name,
+            struct_ref_name=struct_ref_name,
+            net_to_host_function=field_type.net_to_host_function,
+            c_name=field.name)
+    else:
+        return _C2J_OBJECT_SWAP_TEMPLATE.substitute(
+            java_name=field.java_name,
+            class_ref_name=msg_java_name,
+            jni_signature=field_type.jni_signature,
+            jni_name=field_type.jni_name,
+            jni_accessor=field_type.jni_accessor,
+            object_ref_name=object_ref_name,
+            struct_ref_name=struct_ref_name,
+            net_to_host_function=field_type.net_to_host_function,
+            c_name=field.name)
 
 _C2J_OBJECT_SWAP_TEMPLATE = Template("""
     jfieldID ${java_name}FieldId = (*env)->GetFieldID(env, ${class_ref_name}Class, "${java_name}", "${jni_signature}");
     jclass ${java_name}Class = (*env)->FindClass(env, "${jni_name}");
     jmethodID ${java_name}Constructor = (*env)->GetMethodID(env, ${java_name}Class, "<init>", "()V");
     jobject ${java_name} = (*env)->NewObject(env, ${java_name}Class,  ${java_name}Constructor);
+    ${net_to_host_function}(env, &(${struct_ref_name}->${c_name}), ${java_name});
+    (*env)->Set${jni_accessor}Field(env, ${object_ref_name}, ${java_name}FieldId, ${java_name});
+    (*env)->DeleteLocalRef(env, ${java_name});
+""")
+
+_C2J_UNION_SWAP_TEMPLATE = Template("""
+    jfieldID ${java_name}FieldId = (*env)->GetFieldID(env, ${class_ref_name}Class, "${java_name}", "${jni_signature}");
+    jclass ${java_name}UnionClass = (*env)->FindClass(env, "${jni_name}");
+    jmethodID ${java_name}Constructor = (*env)->GetMethodID(env, ${java_name}UnionClass, "<init>", "()V");
+    jobject ${java_name} = (*env)->NewObject(env, ${java_name}UnionClass,  ${java_name}Constructor);
     ${net_to_host_function}(env, &(${struct_ref_name}->${c_name}), ${java_name});
     (*env)->Set${jni_accessor}Field(env, ${object_ref_name}, ${java_name}FieldId, ${java_name});
     (*env)->DeleteLocalRef(env, ${java_name});
