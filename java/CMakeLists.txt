@@ -156,6 +156,7 @@ elseif (${RELEASE_ID} IN_LIST RHBasedOS)
             COMMAND grep -v ioam_export
             COMMAND grep -v ioam_vxlan_gpe
             COMMAND grep -v l2e
+            COMMAND grep -v l3xc
             COMMAND grep -v lacp
             COMMAND grep -v lb
             COMMAND grep -v mactime
