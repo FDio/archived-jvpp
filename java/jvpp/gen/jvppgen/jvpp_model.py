@@ -514,12 +514,12 @@ class JVppModel(object):
 
     def _parse_union(self, name, definition):
         self.logger.debug("Parsing union %s: %s", name, definition)
-        crc, fields = self._parse_fields(definition)
+        crc, fields = self._parse_fields(definition, data_type="union")
         return Union(name, crc, fields, definition, self.plugin_name)
 
     def _parse_type(self, name, definition):
         self.logger.debug("Parsing type %s: %s", name, definition)
-        crc, fields = self._parse_fields(definition)
+        crc, fields = self._parse_fields(definition, data_type="type")
         return Class(name, crc, fields, definition, self.plugin_name)
 
     def _parse_services(self):
@@ -544,7 +544,7 @@ class JVppModel(object):
 
     def _parse_message(self, name, definition):
         self.logger.debug("Parsing message %s: %s", name, definition)
-        crc, fields = self._parse_fields(definition)
+        crc, fields = self._parse_fields(definition, data_type="message")
         if name in self._services:
             service = self._services[name]
             reply = service['reply']
@@ -563,7 +563,7 @@ class JVppModel(object):
             # Throw exception instead (requires fixing vppagigen).
             return Event(name, crc, filter(_is_request_field, fields), definition)
 
-    def _parse_fields(self, definition):
+    def _parse_fields(self, definition, data_type):
         crc = None
         fields = []
         for item in definition:
@@ -571,8 +571,9 @@ class JVppModel(object):
                 crc = item['crc']
             else:
                 fields.append(self._parse_field(item, fields))
-        if not crc:
-            raise ParseException("CRC was not defined for %s" % definition)
+        if "message" in data_type:
+            if not crc:
+                raise ParseException("CRC was not defined for %s" % definition)
         return crc, fields
 
     def _parse_field(self, field, fields):
